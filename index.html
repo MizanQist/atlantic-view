@@ -66,7 +66,8 @@
       <source media="(min-width: 820px) and (orientation: landscape)" srcset="assets/hero-s.jpg 1200w, assets/hero.jpg 1856w" sizes="100vw">
       <img src="assets/m/marina-dusk.jpg" srcset="assets/s/marina-dusk.jpg 900w, assets/m/marina-dusk.jpg 1600w" sizes="(max-width: 900px) 100vw, 60vw" alt="The Atlantic View at dusk, seen from the marina" fetchpriority="high">
     </picture>
-    <video class="vid" id="herovid" muted playsinline loop preload="none" poster="assets/hero.jpg" aria-hidden="true" tabindex="-1"></video>
+    <video class="vid" id="herovid" muted playsinline preload="none" poster="assets/hero.jpg" aria-hidden="true" tabindex="-1"></video>
+    <video class="vid" id="herovid2" muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
   </div>
   <div class="scrim"></div>
   <div class="wrap">
@@ -279,20 +280,21 @@
       <button class="tab on" role="tab" data-unit="b1" aria-selected="true">1 Bedroom</button>
       <button class="tab" role="tab" data-unit="b2" aria-selected="false">2 Bedroom</button>
       <button class="tab" role="tab" data-unit="b3" aria-selected="false">3 Bedroom + BQ</button>
-      <button class="tab" role="tab" data-unit="pent" aria-selected="false">3 Bedroom + BQ, Level 9</button>
+      <button class="tab" role="tab" data-unit="l9w" aria-selected="false">Level 9 West</button>
+      <button class="tab" role="tab" data-unit="l9e" aria-selected="false">Level 9 East</button>
       <button class="tab" role="tab" data-unit="ground" aria-selected="false">Ground floor</button>
     </div>
     <div class="sheet2" id="sheet2">
       <aside class="sh2-side">
-        <div class="keys" id="keys" aria-hidden="true"></div>
+        <div class="key2" id="key2" aria-hidden="true"><img alt=""></div>
         <h3 class="sh2-title"><span class="sl">/</span> <span id="u-title"></span></h3>
         <p class="sh2-level" id="u-level"></p>
-        <ol class="rooms2" id="u-rooms"></ol>
-        <p class="sh2-total" id="u-total"></p>
-        <p class="sh2-note">Areas as drawn on the September 2026 floor plans by A365 Designs, net of walls. Indicative and subject to design development.</p>
+        <dl class="facts2" id="u-facts"></dl>
+        <p class="sh2-note">Dimensions are for guidance only. Layouts shown are for approximate measurements only. Architects: A365 Designs.</p>
       </aside>
       <div class="sh2-plan" id="sh2-plan">
         <div class="sh2-view" id="sh2-view"></div>
+        <img class="plan2" id="plan2" alt="">
         <button class="btn ghost open" id="openplan" type="button">Open the floor plan</button>
       </div>
     </div>
@@ -657,22 +659,23 @@
   <div class="cscrim"></div>
   <div class="wrap cwrap">
     <div class="credits" data-rv>
-      <div class="credit">
-        <img class="clogo" src="assets/logos/a365-light.png" alt="A365 Designs">
-        <h3>Architects</h3>
-        <p>A365 Designs<br>Suite 4, Plot 892 Victor A. Morris, FCT Abuja</p>
-        <div class="chips">
-          <a class="chip" href="tel:+2348169583159">+234 816 958 3159</a>
-          <a class="chip" href="mailto:A365s@yahoo.com">A365s@yahoo.com</a>
-          <a class="chip" href="https://www.instagram.com/a365_" target="_blank" rel="noopener">@a365_</a>
-        </div>
-      </div>
-      <div class="credit">
+      <div class="credit dev">
         <img class="clogo wide" src="assets/logos/dantata-pyramids-light.png" alt="Dantata Pyramids">
-        <h3>Dantata Pyramids</h3>
+        <h3>Developer</h3>
+        <p>Dantata Pyramids</p>
         <div class="chips">
           <a class="chip" href="tel:+2347019040606">+234 701 904 0606</a>
           <a class="chip" href="https://www.instagram.com/dantata_pyramyids" target="_blank" rel="noopener">@dantata_pyramyids</a>
+        </div>
+      </div>
+      <div class="credit arch">
+        <img class="clogo" src="assets/logos/a365-light.png" alt="A365 Designs">
+        <h3>Architects</h3>
+        <p>A365 Designs<br>Suite 4, Plot 892 Victor A. Morris, FCT Abuja</p>
+        <div class="links">
+          <a href="tel:+2348169583159">+234 816 958 3159</a>
+          <a href="mailto:A365s@yahoo.com">A365s@yahoo.com</a>
+          <a href="https://www.instagram.com/a365_" target="_blank" rel="noopener">@a365_</a>
         </div>
       </div>
     </div>

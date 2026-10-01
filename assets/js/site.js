@@ -103,7 +103,32 @@
     vid.load();
     document.addEventListener('visibilitychange', () => { if (document.hidden) vid.pause(); else if (vid.src) tryPlay(); });
   };
-  bgVideo($('#herovid'), 'hero');
+  // hero: two clips played one after the other, crossfading at each handover
+  const heroA = $('#herovid'), heroB = $('#herovid2');
+  if (heroA && heroB && !reduce && !saveData && heroA.canPlayType('video/mp4')) {
+    const pick = base => A('assets/video/' + base + (innerWidth >= 900 ? '-1080.mp4' : '-720.mp4'));
+    const play = v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+    const LEAD = 1.2;
+    let switching = false;
+    heroA.src = pick('hero'); heroB.src = pick('close');
+    heroA.addEventListener('playing', () => { heroA.classList.add('on'); heroB.load(); }, { once: true });
+    heroA.addEventListener('loadeddata', () => play(heroA), { once: true });
+    heroA.addEventListener('timeupdate', () => {
+      if (!switching && heroA.duration && heroA.duration - heroA.currentTime < LEAD) {
+        switching = true; heroB.currentTime = 0; play(heroB); heroB.classList.add('on');
+      }
+    });
+    heroB.addEventListener('timeupdate', () => {
+      if (switching && heroB.duration && heroB.duration - heroB.currentTime < LEAD) {
+        switching = false; heroA.currentTime = 0; play(heroA); heroB.classList.remove('on');
+        setTimeout(() => { if (!switching) heroB.pause(); }, 1600);
+      }
+    });
+    heroA.addEventListener('ended', () => heroA.pause());
+    [heroA, heroB].forEach(v => v.addEventListener('error', () => { heroA.classList.remove('on'); heroB.classList.remove('on'); }, { once: true }));
+    heroA.load();
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { heroA.pause(); heroB.pause(); } else { play(switching ? heroB : heroA); if (switching) play(heroA); } });
+  }
   const closevid = $('#closevid');
   if (closevid) {
     const cio = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { bgVideo(closevid, 'close'); cio.disconnect(); } }), { rootMargin: '900px 0px' });
@@ -285,118 +310,71 @@
     }
   }
 
-  /* ---------- residences: numbered plan sheet ---------- */
+  /* ---------- residences: the architects' unit sheets ---------- */
+  const SH = PD.sheets || {};
   const UNITS = {
-    b1: { plan: 'typical', unit: 'typical-b1', kinds: ['b1'], title: '1 Bedroom Apartment', level: 'Levels 2 to 8. Seven per block, 98 across the estate.',
-      rooms: [['l1', 'Living and dining'], ['k1', 'Kitchen'], ['s11', 'Suite'], ['bal:24 m²', 'Balcony']], total: ['74 m²', ['24 m²', 'balcony']] },
-    b2: { plan: 'typical', unit: 'typical-b2', kinds: ['b2'], title: '2 Bedroom Apartment', level: 'Levels 2 to 8. Seven per block, 98 across the estate.',
-      rooms: [['l2', 'Living room'], ['k2', 'Kitchen'], ['s21', 'Suite 1'], ['s22', 'Suite 2'], ['bal:39 m²', 'Balcony'], ['p2', 'Infinity pool']], total: ['122 m²', ['39 m²', 'balcony'], ['14 m²', 'pool']] },
-    b3: { plan: 'typical', unit: 'typical-b3', kinds: ['b3'], title: '3 Bedroom + 1 BQ Apartment', level: 'Levels 2 to 8, on the left of the floor. Seven per block, 98 across the estate.',
-      rooms: [['l3', 'Living room'], ['k3', 'Kitchen'], ['s31', 'Suite 1'], ['s32', 'Suite 2'], ['s33', 'Suite 3'], ['bq3', 'BQ (staff room)'], ['bal:57 m²', 'Balcony'], ['p3', 'Infinity pool'], ['yard3', 'Backyard']], total: ['181 m²', ['57 m²', 'balcony'], ['14 m²', 'pool'], ['28 m²', 'backyard']] },
-    pent: { plan: 'pent', unit: 'pent-pl', also: 'pent-pr', kinds: ['pent'], side: '<', title: '3 Bedroom + 1 BQ Apartment', level: 'Level 9, the top floor. Two per block, one on either side, 28 across the estate.',
-      rooms: [['lv1', 'Living room'], ['kt1', 'Kitchen'], ['bd00', 'Bedroom 1'], ['bd01', 'Bedroom 2'], ['bd02', 'Bedroom 3'], ['bq', 'BQ (staff room)'], ['bal:69 m²', 'Balcony'], ['bal:35 m²', 'Balcony'], ['pp1', 'Infinity pool'], ['yard', 'Backyard']], total: ['195 m²', ['104 m²', 'balconies'], ['14 m²', 'pool'], ['28 m²', 'backyard']] },
-    ground: { plan: 'ground', unit: null, kinds: ['room'], title: 'Ground floor', level: 'Level 1 of every block, 5.5 metres high.',
-      rooms: [['lobby', 'Entrance lobby and reception'], ['gym', 'Gym and fitness area'], ['machines', 'Equipment and machines'], ['park1', 'Covered parking'], ['park2', 'Covered parking'], ['stairs', 'Service stairs']], total: ['651 m² of shared space on every ground floor'] }
+    b1: { sheet: 'b1' }, b2: { sheet: 'b2' }, b3: { sheet: 'b3' }, l9w: { sheet: 'l9w' }, l9e: { sheet: 'l9e' },
+    ground: { plan: 'ground', title: 'Ground floor', level: 'Level 1 of every block, 5.5 metres high.',
+      facts: [['Entrance lobby and reception', '103 sq m'], ['Gym and fitness area', '85 sq m'], ['Equipment and machines', '100 sq m'], ['Covered parking', '2 × 160 sq m'], ['Service stairs', '43 sq m'], ['Lifts', '4']],
+      rooms: [['lobby', 1], ['gym', 2], ['machines', 3], ['park1', 4], ['park2', 5], ['stairs', 6]] }
   };
   const view = $('#sh2-view');
   const plane = $('#sh2-plan');
-  const keys = $('#keys');
-  const LAYERS = {};
-  const planName = { typical: 'Typical floor plan', pent: 'Level 9 floor plan', ground: 'Ground floor plan' };
-  const findSpot = (spots, ref, side) => {
-    if (ref.startsWith('bal:')) {
-      const detail = ref.slice(4);
-      return spots.find(s => s.kind === 'bal' && s.detail === detail && (!side || (side === '<' ? s.x < 50 : s.x > 50)));
-    }
-    return spots.find(s => s.id === ref);
-  };
-  ['typical', 'pent', 'ground'].forEach(key => {
-    if (!PD[key]) return;
-    const layer = document.createElement('div');
-    layer.className = 'layer';
-    layer.hidden = true;
-    const base = new Image(); base.className = 'base'; base.src = A('assets/plan/' + key + '.png'); base.alt = planName[key]; base.loading = 'lazy';
-    layer.appendChild(base);
-    ['yard', 'bal', 'pool'].forEach(tint => { const d = document.createElement('div'); d.className = 'tint ' + tint; d.hidden = true; layer.appendChild(d); });
-    const unit = new Image(); unit.className = 'unit'; unit.src = A('assets/plan/' + key + '.png'); unit.alt = '';
-    layer.appendChild(unit);
-    PD[key].spots.forEach(sp => {
-      const n = document.createElement('span');
-      n.className = 'num'; n.dataset.id = sp.id; n.style.left = sp.x + '%'; n.style.top = sp.y + '%';
-      layer.appendChild(n);
-    });
-    view.appendChild(layer);
-    LAYERS[key] = layer;
-    // key plan
-    const k = document.createElement('div');
-    k.className = 'key'; k.dataset.plan = key;
-    const ki = new Image(); ki.src = A('assets/plan/' + key + '.png'); ki.alt = ''; ki.loading = 'lazy';
-    const kt = document.createElement('div'); kt.className = 'kt'; kt.hidden = true;
-    const kt2 = document.createElement('div'); kt2.className = 'kt kt2'; kt2.hidden = true;
-    k.appendChild(ki); k.appendChild(kt); k.appendChild(kt2);
-    if (key !== 'ground') keys.appendChild(k);
+  const plan2 = $('#plan2');
+  const key2 = $('#key2');
+  // ground floor: the whole-floor drawing with numbered rooms
+  const ground = document.createElement('div');
+  ground.className = 'layer';
+  const gbase = new Image(); gbase.className = 'base'; gbase.src = A('assets/plan/ground.png'); gbase.alt = 'Ground floor plan'; gbase.loading = 'lazy';
+  ground.appendChild(gbase);
+  (PD.ground ? PD.ground.spots : []).forEach(sp => {
+    const n = document.createElement('span');
+    n.className = 'num'; n.dataset.id = sp.id; n.style.left = sp.x + '%'; n.style.top = sp.y + '%';
+    ground.appendChild(n);
   });
+  view.appendChild(ground);
+  view.classList.add('whole');
   let unit = 'b1';
-  const ratio = key => { const im = $('.base', LAYERS[key]); return im.naturalWidth ? im.naturalWidth / im.naturalHeight : (PD[key] ? PD[key].w / PD[key].h : 1.88); };
-  const fit = (key, bbox) => {
-    const W = plane.clientWidth, H = plane.clientHeight, ar = ratio(key);
-    const iw = W, ih = W / ar;
-    let [x0, y0, x1, y1] = bbox.map(v => v / 100);
-    const px = 0.04, py = 0.04 * ar;
-    x0 = Math.max(0, x0 - px); x1 = Math.min(1, x1 + px); y0 = Math.max(0, y0 - py); y1 = Math.min(1, y1 + py);
-    const bw = (x1 - x0) * iw, bh = (y1 - y0) * ih;
-    const sc = Math.min(W / bw, H / bh);
-    const tx = (W - bw * sc) / 2 - x0 * iw * sc, ty = (H - bh * sc) / 2 - y0 * ih * sc;
-    view.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + sc + ')';
+  const fitGround = () => {
+    const W = plane.clientWidth, H = plane.clientHeight;
+    const ar = gbase.naturalWidth ? gbase.naturalWidth / gbase.naturalHeight : (PD.ground ? PD.ground.w / PD.ground.h : 2);
+    const iw = W, ih = W / ar, pad = 0.04;
+    const sc = Math.min(W / (iw * (1 + 2 * pad)), H / (ih * (1 + 2 * pad)));
+    view.style.transform = 'translate(' + ((W - iw * sc) / 2) + 'px,' + ((H - ih * sc) / 2) + 'px) scale(' + sc + ')';
     view.style.setProperty('--ms', (Math.max(22, W * 0.022) / sc).toFixed(2) + 'px');
   };
-  const setMask = (el, path) => { const m = path ? 'url("' + A(path) + '")' : 'none'; el.style.webkitMaskImage = m; el.style.maskImage = m; };
   const showUnit = key => {
     unit = key;
     const u = UNITS[key];
     $$('#utabs .tab').forEach(t => { const on = t.dataset.unit === key; t.classList.toggle('on', on); t.setAttribute('aria-selected', on); });
-    Object.keys(LAYERS).forEach(k => { LAYERS[k].hidden = k !== u.plan; });
-    const layer = LAYERS[u.plan];
-    const info = u.unit && PD.units ? PD.units[u.unit] : null;
-    const bbox = info ? info.bbox : [0, 0, 100, 100];
-    view.classList.toggle('whole', !u.unit);
-    if (u.unit) {
-      setMask($('.unit', layer), 'assets/plan/units/' + u.unit + '.png');
-      $$('.tint', layer).forEach(d => {
-        const tint = d.className.replace('tint ', '');
-        const has = info && info.tints && info.tints.includes(tint);
-        d.hidden = !has;
-        if (has) setMask(d, 'assets/plan/units/' + u.unit + '-' + tint + '.png');
-      });
+    const sh = u.sheet ? SH[u.sheet] : null;
+    view.hidden = !!sh;
+    plan2.classList.toggle('on', !!sh);
+    $('img', key2).hidden = !sh;
+    if (sh) {
+      plan2.src = A('assets/plan/sheets/' + u.sheet + '-m.png');
+      plan2.alt = sh.title + (sh.subtitle ? ', ' + sh.subtitle : '') + ' floor plan';
+      $('img', key2).src = A('assets/plan/sheets/' + u.sheet + '-key.png');
+      $('#u-title').textContent = sh.title + (sh.subtitle ? ', ' + sh.subtitle.replace(/\s*–\s*/, ' ') : '');
+      $('#u-level').textContent = sh.meta.join('. ') + '.';
+      $('#u-facts').innerHTML = sh.facts.map(f => '<div class="' + (f[0] === 'Total' ? 'tot' : '') + '"><dt>' + (f[0] === 'Total' ? 'Total area' : f[0] + ' area') + '</dt><dd>' + f[1] + '</dd></div>').join('');
+    } else {
+      $('#u-title').textContent = u.title;
+      $('#u-level').textContent = u.level;
+      $('#u-facts').innerHTML = u.facts.map(f => '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>').join('');
+      $$('.num', ground).forEach(n => { n.classList.remove('on'); n.textContent = ''; });
+      u.rooms.forEach(([id, n]) => { const el = $$('.num', ground).find(x => x.dataset.id === id); if (el) { el.textContent = n; el.classList.add('on'); } });
+      fitGround();
     }
-    $$('.key', keys).forEach(k => {
-      const mine = k.dataset.plan === u.plan && u.unit;
-      const kt = $('.kt:not(.kt2)', k), kt2 = $('.kt2', k);
-      kt.hidden = !mine; if (mine) setMask(kt, 'assets/plan/units/' + u.unit + '.png');
-      kt2.hidden = !(mine && u.also); if (mine && u.also) setMask(kt2, 'assets/plan/units/' + u.also + '.png');
-    });
-    const spots = PD[u.plan] ? PD[u.plan].spots : [];
-    $$('.num', view).forEach(n => { n.classList.remove('on'); n.textContent = ''; });
-    const rows = [];
-    u.rooms.forEach((r, i) => {
-      const sp = findSpot(spots, r[0], u.side);
-      const n = i + 1;
-      rows.push('<li><b>' + n + '-</b><span>' + r[1] + (sp && sp.detail ? '<em>' + sp.detail + '</em>' : '') + '</span></li>');
-      if (sp) { const el = $$('.num', layer).find(x => x.dataset.id === sp.id); if (el) { el.textContent = n; el.classList.add('on'); } }
-    });
-    $('#u-title').textContent = u.title;
-    $('#u-level').textContent = u.level;
-    $('#u-rooms').innerHTML = rows.join('');
-    $('#u-total').textContent = u.total[0] + u.total.slice(1).map(t => ' + ' + t[0] + (t[1] ? ' (' + t[1] + ')' : '')).join('');
-    fit(u.plan, bbox);
   };
   $$('#utabs .tab').forEach(t => t.addEventListener('click', () => showUnit(t.dataset.unit)));
   showUnit('b1');
-  addEventListener('resize', () => showUnit(unit));
-  $$('.base', view).forEach(im => im.addEventListener('load', () => { if (LAYERS[UNITS[unit].plan] === im.closest('.layer')) showUnit(unit); }));
+  addEventListener('resize', () => { if (unit === 'ground') fitGround(); });
+  gbase.addEventListener('load', () => { if (unit === 'ground') fitGround(); });
   $('#openplan').addEventListener('click', () => {
     const u = UNITS[unit];
-    openLightbox([{ src: A('assets/plan/' + u.plan + '.png'), cap: planName[u.plan], sub: 'Drag to pan, scroll or pinch to zoom' }], 0, true);
+    if (u.sheet) openLightbox([{ src: A('assets/plan/sheets/' + u.sheet + '.png'), cap: SH[u.sheet].title + (SH[u.sheet].subtitle ? ', ' + SH[u.sheet].subtitle : ''), sub: 'Drag to pan, scroll or pinch to zoom' }], 0, true);
+    else openLightbox([{ src: A('assets/plan/ground.png'), cap: 'Ground floor plan', sub: 'Drag to pan, scroll or pinch to zoom' }], 0, true);
   });
 
   /* ---------- inside a block: program schematic ---------- */

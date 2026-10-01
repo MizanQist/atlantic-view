@@ -539,10 +539,18 @@ html.no-anim .sh2-view{transition:none}
 html.no-anim .closing .cbg video{display:none}
 .cscrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,20,32,.3) 0%,rgba(11,20,32,.05) 30%,rgba(11,20,32,.55) 62%,rgba(11,20,32,.88) 100%)}
 .cwrap{position:relative;z-index:1;padding-block:clamp(120px,16vh,180px) clamp(36px,5vh,56px)}
-.credits{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,72px);align-items:end;max-width:900px}
+.credits{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(28px,4vw,80px);align-items:end;max-width:960px}
 .credit{display:grid;gap:12px;justify-items:start}
 .clogo{height:clamp(56px,6vw,78px);width:auto;margin-bottom:10px;filter:drop-shadow(0 2px 12px rgba(0,0,0,.35))}
-.clogo.wide{height:clamp(64px,7vw,92px)}
+.clogo.wide{height:clamp(84px,9vw,124px)}
+.credit.dev p{font-size:1.05rem;color:var(--photo-ink)}
+.credit.arch{padding-bottom:4px}
+.credit.arch .clogo{height:clamp(34px,3.6vw,46px);margin-bottom:4px;opacity:.9}
+.credit.arch h3{font-size:.6rem;color:rgba(227,186,140,.8)}
+.credit.arch p{font-size:.8rem;color:rgba(233,227,215,.68)}
+.credit .links{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.78rem}
+.credit .links a{color:rgba(233,227,215,.78);text-decoration:none}
+.credit .links a:hover{color:#e3ba8c;text-decoration:underline}
 .credit h3{font:500 .68rem/1 var(--fb);letter-spacing:.24em;text-transform:uppercase;color:#e3ba8c}
 .credit p{font-size:.92rem;color:rgba(233,227,215,.82);margin:0}
 .credit .chips{margin-top:4px}
@@ -554,3 +562,15 @@ html.no-anim .closing .cbg video{display:none}
 .mql-line a{color:rgba(233,227,215,.78);text-decoration:none}
 .mql-line a:hover{color:#e3ba8c;text-decoration:underline}
 @media(max-width:900px){.credits{grid-template-columns:1fr;gap:34px}.cwrap{padding-top:120px}.closing .foot{flex-direction:column;align-items:flex-start;gap:14px}.mql-line{order:3}.cscrim{background:linear-gradient(180deg,rgba(11,20,32,.5) 0%,rgba(11,20,32,.7) 30%,rgba(11,20,32,.9) 100%)}}
+
+/* residences: sheets from the architects' unit plans */
+.key2{max-width:230px}
+.key2 img{width:100%;display:block}
+.facts2{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:.88rem;margin:4px 0 0}
+.facts2 dt{color:var(--ink2)}
+.facts2 dd{margin:0;font-variant-numeric:tabular-nums}
+.facts2 .tot dt,.facts2 .tot dd{padding-top:10px;border-top:1px solid var(--line);font-weight:600;color:var(--ink)}
+.plan2{position:absolute;inset:clamp(14px,2.4vw,34px);width:auto;height:auto;max-width:calc(100% - 2 * clamp(14px,2.4vw,34px));max-height:calc(100% - 2 * clamp(14px,2.4vw,34px));margin:auto;object-fit:contain;display:none}
+.plan2.on{display:block}
+.sh2-view[hidden],.key2 img[hidden]{display:none}
+.hero .bg video+video{z-index:1}

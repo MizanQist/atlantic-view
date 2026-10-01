@@ -1996,5 +1996,161 @@ window.PLAN_DATA = {
     ]
    ]
   }
+ },
+ "sheets": {
+  "b1": {
+   "title": "1 Bedroom Apartment",
+   "subtitle": "",
+   "meta": [
+    "Typical Floor",
+    "Levels 2 – 8",
+    "Bedrooms 1",
+    "7 per block"
+   ],
+   "facts": [
+    [
+     "Internal",
+     "85 sq m / 915 sq ft"
+    ],
+    [
+     "Balcony",
+     "24 sq m / 258 sq ft"
+    ],
+    [
+     "Total",
+     "109 sq m / 1173 sq ft"
+    ]
+   ],
+   "w": 1839,
+   "h": 927
+  },
+  "b2": {
+   "title": "2 Bedroom Apartment",
+   "subtitle": "",
+   "meta": [
+    "Typical Floor",
+    "Levels 2 – 8",
+    "Bedrooms 2",
+    "7 per block"
+   ],
+   "facts": [
+    [
+     "Internal",
+     "155 sq m / 1668 sq ft"
+    ],
+    [
+     "Balcony",
+     "39 sq m / 420 sq ft"
+    ],
+    [
+     "Pool",
+     "14 sq m / 151 sq ft"
+    ],
+    [
+     "Total",
+     "208 sq m / 2239 sq ft"
+    ]
+   ],
+   "w": 1839,
+   "h": 1446
+  },
+  "b3": {
+   "title": "3 Bedroom + BQ Apartment",
+   "subtitle": "",
+   "meta": [
+    "Typical Floor",
+    "Levels 2 – 8",
+    "Bedrooms 3 + BQ",
+    "7 per block"
+   ],
+   "facts": [
+    [
+     "Internal",
+     "232 sq m / 2497 sq ft"
+    ],
+    [
+     "Balcony",
+     "57 sq m / 614 sq ft"
+    ],
+    [
+     "Pool",
+     "14 sq m / 151 sq ft"
+    ],
+    [
+     "Backyard",
+     "28 sq m / 301 sq ft"
+    ],
+    [
+     "Total",
+     "331 sq m / 3563 sq ft"
+    ]
+   ],
+   "w": 1839,
+   "h": 1734
+  },
+  "l9w": {
+   "title": "3 Bedroom + BQ Apartment",
+   "subtitle": "Level 9 – West",
+   "meta": [
+    "Top Floor",
+    "Level 9",
+    "Bedrooms 3 + BQ",
+    "1 per block"
+   ],
+   "facts": [
+    [
+     "Internal",
+     "232 sq m / 2497 sq ft"
+    ],
+    [
+     "Balcony",
+     "104 sq m / 1119 sq ft"
+    ],
+    [
+     "Pool",
+     "14 sq m / 151 sq ft"
+    ],
+    [
+     "Backyard",
+     "28 sq m / 301 sq ft"
+    ],
+    [
+     "Total",
+     "378 sq m / 4069 sq ft"
+    ]
+   ],
+   "w": 1839,
+   "h": 1734
+  },
+  "l9e": {
+   "title": "3 Bedroom + BQ Apartment",
+   "subtitle": "Level 9 – East",
+   "meta": [
+    "Top Floor",
+    "Level 9",
+    "Bedrooms 3 + BQ",
+    "1 per block"
+   ],
+   "facts": [
+    [
+     "Internal",
+     "232 sq m / 2497 sq ft"
+    ],
+    [
+     "Balcony",
+     "90 sq m / 969 sq ft"
+    ],
+    [
+     "Pool",
+     "14 sq m / 151 sq ft"
+    ],
+    [
+     "Total",
+     "336 sq m / 3617 sq ft"
+    ]
+   ],
+   "w": 1839,
+   "h": 1788
+  }
  }
 };
