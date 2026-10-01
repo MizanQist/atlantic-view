@@ -95,7 +95,8 @@
   const saveData = navigator.connection && navigator.connection.saveData;
   const bgVideo = (vid, base) => {
     if (!vid || vid.src || reduce || saveData || !vid.canPlayType('video/mp4')) return;
-    vid.src = A('assets/video/' + base + (innerWidth >= 900 ? '-1080.mp4' : '-720.mp4'));
+    const devW = innerWidth * (devicePixelRatio || 1);
+    vid.src = A('assets/video/' + base + (window.__AV ? '-720.mp4' : devW >= 2000 ? '-1440.mp4' : devW >= 1100 ? '-1080.mp4' : '-720.mp4'));
     vid.addEventListener('playing', () => vid.classList.add('on'), { once: true });
     vid.addEventListener('error', () => vid.remove(), { once: true });
     const tryPlay = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
@@ -106,7 +107,9 @@
   // hero: two clips played one after the other, crossfading at each handover
   const heroA = $('#herovid'), heroB = $('#herovid2');
   if (heroA && heroB && !reduce && !saveData && heroA.canPlayType('video/mp4')) {
-    const pick = base => A('assets/video/' + base + (innerWidth >= 900 ? '-1080.mp4' : '-720.mp4'));
+    const devW = innerWidth * (devicePixelRatio || 1);
+    const tier = window.__AV ? '-720.mp4' : devW >= 2000 ? '-1440.mp4' : devW >= 1100 ? '-1080.mp4' : '-720.mp4';
+    const pick = base => A('assets/video/' + base + tier);
     const play = v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
     const LEAD = 1.2;
     let switching = false;
@@ -489,7 +492,7 @@
         if (!box || !slug) return;
         const im = new Image();
         im.src = A('assets/m/' + slug + '.jpg'); im.alt = ''; im.loading = 'lazy';
-        if (!window.__AV) { im.srcset = 'assets/s/' + slug + '.jpg 900w, assets/m/' + slug + '.jpg 1600w'; im.sizes = '(max-width: 900px) 100vw, 40vw'; }
+        if (!window.__AV) { im.srcset = 'assets/s/' + slug + '.jpg 1100w, assets/m/' + slug + '.jpg 2000w, assets/r/' + slug + '.jpg 2560w'; im.sizes = '(max-width: 900px) 100vw, 40vw'; }
         if (i === 0) im.classList.add('on');
         box.appendChild(im);
       });
