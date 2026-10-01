@@ -107,7 +107,7 @@ html.no-anim .hero h1 .ln span{transform:none;transition:none}
 html.no-anim .hero .bg img{transform:none;transition:none}
 
 /* vision */
-.vision .grid{display:grid;grid-template-columns:5fr 4fr 3fr;gap:clamp(28px,4vw,64px);align-items:stretch}
+.vision .grid{display:grid;grid-template-columns:4.5fr 3.5fr 4fr;gap:clamp(28px,4vw,64px);align-items:stretch}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:30px 22px;border-top:1px solid var(--line);padding-top:28px}
 .stat .n{font:200 clamp(2rem,3.1vw,2.9rem)/1 var(--fd);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .stat .n small{font-size:.48em;color:var(--acc);margin-left:.2em;letter-spacing:.02em}
@@ -116,8 +116,9 @@ html.no-anim .hero .bg img{transform:none;transition:none}
 .fig{position:relative;border-radius:var(--r);overflow:hidden;background:var(--bg2)}
 .fig .tag{position:absolute;left:14px;top:14px;margin:0;color:#e3ba8c;background:rgba(11,20,32,.55);border-color:rgba(227,186,140,.5);pointer-events:none}
 .fig img{width:100%;height:100%;object-fit:cover}
-.vision .fig{min-height:440px}
-@media(max-width:1000px){.vision .grid{grid-template-columns:1fr 1fr}.vision .fig{grid-column:1/-1;aspect-ratio:16/9;min-height:0}}
+.vision .fig{min-height:0;align-self:start}
+.vision .fig img{height:auto;object-fit:unset}
+@media(max-width:1000px){.vision .grid{grid-template-columns:1fr 1fr}.vision .fig{grid-column:1/-1;max-width:520px}}
 @media(max-width:640px){.vision .grid{grid-template-columns:1fr}}
 
 /* two design options */
@@ -541,7 +542,7 @@ html.no-anim .closing .cbg video{display:none}
 .cwrap{position:relative;z-index:1;padding-block:clamp(120px,16vh,180px) clamp(36px,5vh,56px)}
 .credits{display:grid;grid-template-columns:1.5fr 1fr;gap:clamp(28px,4vw,80px);align-items:end;max-width:960px}
 .credit{display:grid;gap:12px;justify-items:start}
-.clogo{height:clamp(56px,6vw,78px);width:auto;margin-bottom:10px;filter:drop-shadow(0 2px 12px rgba(0,0,0,.35))}
+.clogo{height:clamp(56px,6vw,78px);width:auto;margin-bottom:10px}
 .clogo.wide{height:clamp(84px,9vw,124px)}
 .credit.dev p{font-size:1.05rem;color:var(--photo-ink)}
 .credit.arch{padding-bottom:4px}
