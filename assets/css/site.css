@@ -582,3 +582,10 @@ html.no-anim .closing .cbg video{display:none}
 .plan2.on{display:block}
 .sh2-view[hidden],.key2 img[hidden]{display:none}
 .hero .bg video+video{z-index:1}
+
+/* whole-floor tabs: numbered legend */
+.legend2{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;font-size:.78rem;color:var(--ink2)}
+.legend2[hidden]{display:none}
+.legend2 li{display:grid;grid-template-columns:22px 1fr;gap:6px;align-items:start}
+.legend2 b{font-weight:700;color:var(--ink)}
+.facts2 dd{white-space:normal}
