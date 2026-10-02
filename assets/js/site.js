@@ -612,6 +612,31 @@
   const mcard = $('#mcard');
   const KIND_LABEL = { block: 'Residences', marina: 'Marina', green: 'Parks and gardens', leisure: 'Clubhouse', arrival: 'Arrival' };
   const home = mcard.innerHTML;
+  /* the vector site plan draws itself on when it scrolls into view, then traces the arrival route */
+  const sp = $('#siteplan');
+  const hl = id => { if (!sp) return; $$('.on', sp).forEach(x => x.classList.remove('on')); if (id) $$('[data-id="' + id + '"]', sp).forEach(x => x.classList.add('on')); };
+  if (sp && mapb) {
+    const motion = $('#spmotion');
+    const DRAW_MS = 3600;
+    let timer;
+    const play = () => {
+      clearTimeout(timer);
+      sp.classList.remove('in', 'route'); mapb.classList.remove('drawn');
+      void sp.getBoundingClientRect();
+      if (reduce) { sp.classList.add('in', 'route'); mapb.classList.add('drawn'); return; }
+      sp.classList.add('in');
+      timer = setTimeout(() => {
+        mapb.classList.add('drawn'); sp.classList.add('route');
+        try { motion && motion.beginElement(); } catch (e) { /* SMIL unavailable: the route still draws */ }
+      }, DRAW_MS);
+    };
+    if ('IntersectionObserver' in window) {
+      const spio = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { play(); spio.disconnect(); } }, { threshold: .3 });
+      spio.observe(mapb);
+    } else play();
+    const rp = $('#spreplay');
+    if (rp) rp.addEventListener('click', play);
+  }
   if (mapb && PD.master) {
     PD.master.spots.forEach(s => {
       if (s.kind === 'label') {
@@ -620,18 +645,20 @@
         mapb.appendChild(l); return;
       }
       const b = makeSpot(s, s.kind === 'block' ? 'b' : '');
+      b.dataset.id = s.id;
       if (s.kind === 'block') b.insertAdjacentText('afterbegin', s.id.replace('b', '').replace(/^0/, ''));
-      const show = () => { mcard.innerHTML = '<div class="cnt">' + (s.detail.match(/^[\d,]+ sqm/) ? s.detail.match(/^[\d,]+ sqm/)[0] : (s.kind === 'block' ? '8 floors' : KIND_LABEL[s.kind] || '')) + '</div><h3>' + s.name + '</h3><p>' + s.detail + '</p>'; };
+      const show = () => { hl(s.id); mcard.innerHTML = '<div class="cnt">' + (s.detail.match(/^[\d,]+ sqm/) ? s.detail.match(/^[\d,]+ sqm/)[0] : (s.kind === 'block' ? '8 floors' : KIND_LABEL[s.kind] || '')) + '</div><h3>' + s.name + '</h3><p>' + s.detail + '</p>'; };
       b.addEventListener('mouseenter', show);
       b.addEventListener('focus', show);
       b.addEventListener('click', () => { $$('.hs.sel', mapb).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); show(); });
       mapb.appendChild(b);
     });
-    mapb.addEventListener('mouseleave', () => { if (!$('.hs.sel', mapb)) mcard.innerHTML = home; });
+    mapb.addEventListener('mouseleave', () => { const sel = $('.hs.sel', mapb); hl(sel ? sel.dataset.id : null); if (!sel) mcard.innerHTML = home; });
     $$('#mfilters .tab').forEach(t => t.addEventListener('click', () => {
       const kind = t.dataset.kind;
       $$('#mfilters .tab').forEach(x => x.classList.toggle('on', x === t));
       $$('.hs', mapb).forEach(h => h.classList.toggle('dim', kind !== 'all' && h.dataset.kind !== kind));
+      if (sp) { if (kind === 'all') sp.removeAttribute('data-focus'); else sp.dataset.focus = kind; }
       const n = PD.master.spots.filter(s => s.kind === kind).length;
       const sum = { block: 'Fourteen blocks of eight floors, 23 residences each. 322 homes.', marina: 'The marina and boat club, the main marina and dock area, the creek dock for small boats and four marina access points.', green: 'Park and sports area, garden and leisure areas and the park garden: about 5,400 sqm of named green space, with landscape around every block.', leisure: 'The 2,000 sqm clubhouse sits at the centre of the plan, a short walk from every block.', arrival: 'The entrance plaza with three floors of commercial and facility space at the south-west corner.' };
       mcard.innerHTML = kind === 'all' ? home : '<div class="cnt">' + n + '</div><h3>' + KIND_LABEL[kind] + '</h3><p>' + sum[kind] + '</p>';

@@ -80,8 +80,8 @@ window.PLAN_DATA = {
     "name": "Atlantic Ocean",
     "detail": "",
     "kind": "label",
-    "x": 34.03,
-    "y": 19.51
+    "x": 18.0,
+    "y": 36.0
    },
    {
     "id": "accessC",
