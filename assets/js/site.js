@@ -91,46 +91,59 @@
   if (hasGsap && !reduce) {
     gsap.to('.hero .bg', { yPercent: 22, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
   }
-  // background videos: seamless loops; the still image beneath stays as poster and fallback
+  // background videos: seamless loops; the still image beneath stays as poster and fallback.
+  // Safari rejects play() until the clip is really ready (and iPhones in Low Power Mode until a touch), so every
+  // play goes through a retrier that tries again on canplaythrough, after short delays, and on the first gesture.
   const saveData = navigator.connection && navigator.connection.saveData;
+  const gestureQueue = [];
+  const onGesture = () => { gestureQueue.splice(0).forEach(fn => fn()); };
+  ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(ev => addEventListener(ev, onGesture, { passive: true, once: false }));
+  const tryPlay = (v, attempt = 0) => {
+    if (!v || !v.src) return;
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {
+      if (attempt === 0) {
+        v.addEventListener('canplaythrough', () => tryPlay(v, 1), { once: true });
+        gestureQueue.push(() => { if (v.paused) tryPlay(v, 9); });
+      }
+      if (attempt < 6) setTimeout(() => { if (v.paused) tryPlay(v, attempt + 1); }, 400 * (attempt + 1));
+    });
+  };
+  const videoTier = () => { const devW = innerWidth * (devicePixelRatio || 1); return window.__AV ? '-720.mp4' : devW >= 1100 ? '-1080.mp4' : '-720.mp4'; };
   const bgVideo = (vid, base) => {
     if (!vid || vid.src || reduce || saveData || !vid.canPlayType('video/mp4')) return;
-    const devW = innerWidth * (devicePixelRatio || 1);
-    vid.src = A('assets/video/' + base + (window.__AV ? '-720.mp4' : devW >= 2000 ? '-1440.mp4' : devW >= 1100 ? '-1080.mp4' : '-720.mp4'));
+    vid.src = A('assets/video/' + base + videoTier());
     vid.addEventListener('playing', () => vid.classList.add('on'), { once: true });
     vid.addEventListener('error', () => vid.remove(), { once: true });
-    const tryPlay = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
-    vid.addEventListener('loadeddata', tryPlay, { once: true });
+    vid.addEventListener('loadeddata', () => tryPlay(vid), { once: true });
     vid.load();
-    document.addEventListener('visibilitychange', () => { if (document.hidden) vid.pause(); else if (vid.src) tryPlay(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) vid.pause(); else if (vid.src) tryPlay(vid); });
   };
   // hero: two clips played one after the other, crossfading at each handover
   const heroA = $('#herovid'), heroB = $('#herovid2');
   if (heroA && heroB && !reduce && !saveData && heroA.canPlayType('video/mp4')) {
-    const devW = innerWidth * (devicePixelRatio || 1);
-    const tier = window.__AV ? '-720.mp4' : devW >= 2000 ? '-1440.mp4' : devW >= 1100 ? '-1080.mp4' : '-720.mp4';
-    const pick = base => A('assets/video/' + base + tier);
-    const play = v => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
     const LEAD = 1.2;
     let switching = false;
-    heroA.src = pick('hero'); heroB.src = pick('close');
+    heroA.src = A('assets/video/hero' + videoTier()); heroB.src = A('assets/video/close' + videoTier());
     heroA.addEventListener('playing', () => { heroA.classList.add('on'); heroB.load(); }, { once: true });
-    heroA.addEventListener('loadeddata', () => play(heroA), { once: true });
+    heroA.addEventListener('loadeddata', () => tryPlay(heroA), { once: true });
     heroA.addEventListener('timeupdate', () => {
       if (!switching && heroA.duration && heroA.duration - heroA.currentTime < LEAD) {
-        switching = true; heroB.currentTime = 0; play(heroB); heroB.classList.add('on');
+        switching = true; heroB.currentTime = 0; tryPlay(heroB);
       }
     });
+    heroB.addEventListener('playing', () => { if (switching) heroB.classList.add('on'); });
     heroB.addEventListener('timeupdate', () => {
       if (switching && heroB.duration && heroB.duration - heroB.currentTime < LEAD) {
-        switching = false; heroA.currentTime = 0; play(heroA); heroB.classList.remove('on');
+        switching = false; heroA.currentTime = 0; tryPlay(heroA); heroB.classList.remove('on');
         setTimeout(() => { if (!switching) heroB.pause(); }, 1600);
       }
     });
-    heroA.addEventListener('ended', () => heroA.pause());
+    heroA.addEventListener('ended', () => { if (!switching) { heroA.currentTime = 0; tryPlay(heroA); } });
+    heroB.addEventListener('ended', () => { if (switching) { switching = false; heroB.classList.remove('on'); heroA.currentTime = 0; tryPlay(heroA); } });
     [heroA, heroB].forEach(v => v.addEventListener('error', () => { heroA.classList.remove('on'); heroB.classList.remove('on'); }, { once: true }));
     heroA.load();
-    document.addEventListener('visibilitychange', () => { if (document.hidden) { heroA.pause(); heroB.pause(); } else { play(switching ? heroB : heroA); if (switching) play(heroA); } });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { heroA.pause(); heroB.pause(); } else { tryPlay(switching ? heroB : heroA); } });
   }
   const closevid = $('#closevid');
   if (closevid) {
