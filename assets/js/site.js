@@ -318,11 +318,11 @@
   const UNITS = {
     b1: { sheet: 'b1' }, b2: { sheet: 'b2' }, b3: { sheet: 'b3' }, l9w: { sheet: 'l9w' }, l9e: { sheet: 'l9e' },
     lower: { plan: 'typical', title: 'Lower Floors', level: 'Levels 2 to 8, the typical floor. A 1 bedroom and a 2 bedroom apartment on the right, a 3 bedroom + BQ apartment on the left, around the elevator lobby.',
-      facts: [['1 Bedroom', '85 sq m + 24 sq m balcony'], ['2 Bedroom', '155 sq m + 39 sq m balcony + pool'], ['3 Bedroom + BQ', '232 sq m + 57 sq m balcony + pool + backyard'], ['Elevator lobby', '79 sq m'], ['Lifts', '4']],
+      facts: [['1 Bedroom', '109 sq m'], ['2 Bedroom', '208 sq m'], ['3 Bedroom + BQ', '331 sq m'], ['Elevator lobby', '79 sq m'], ['Lifts', '4']],
       rooms: [['l1', 1], ['k1', 2], ['s11', 3], ['bal19', 4], ['l2', 5], ['k2', 6], ['s21', 7], ['s22', 8], ['p2', 9], ['bal17', 10], ['l3', 11], ['k3', 12], ['s31', 13], ['s32', 14], ['s33', 15], ['bq3', 16], ['p3', 17], ['bal18', 18], ['yard3', 19], ['el', 20]],
       legend: [[1, '1 Bed living and dining'], [2, '1 Bed kitchen'], [3, '1 Bed suite'], [4, '1 Bed balcony'], [5, '2 Bed living room'], [6, '2 Bed kitchen'], [7, '2 Bed suite 1'], [8, '2 Bed suite 2'], [9, '2 Bed infinity pool'], [10, '2 Bed balcony'], [11, '3 Bed living room'], [12, '3 Bed kitchen'], [13, '3 Bed suite 1'], [14, '3 Bed suite 2'], [15, '3 Bed suite 3'], [16, 'BQ'], [17, '3 Bed infinity pool'], [18, '3 Bed balcony'], [19, 'Backyard'], [20, 'Elevator lobby']] },
     pent: { plan: 'pent', title: 'Pent Floor', level: 'Level 9, the top floor. Two 3 bedroom + BQ apartments, West and East, one on either side of the entrance lobby.',
-      facts: [['Level 9 West', '232 sq m + 104 sq m balconies + pool + backyard'], ['Level 9 East', '232 sq m + 90 sq m balconies + pool'], ['Entrance lobby', '76 sq m'], ['Lifts', '4']],
+      facts: [['Level 9 West', '378 sq m'], ['Level 9 East', '336 sq m'], ['Entrance lobby', '76 sq m'], ['Lifts', '4']],
       rooms: [['lv1', 1], ['kt1', 2], ['bd00', 3], ['bd01', 4], ['bd02', 5], ['bq', 6], ['pp1', 7], ['yard', 8], ['bal15', 9], ['bal16', 9], ['lv2', 10], ['kt2', 11], ['bd10', 12], ['bd11', 13], ['bd12', 14], ['pp2', 15], ['bal17', 16], ['bal18', 16], ['el', 17]],
       legend: [[1, 'West living room'], [2, 'West kitchen'], [3, 'West bedroom 1'], [4, 'West bedroom 2'], [5, 'West bedroom 3'], [6, 'West BQ'], [7, 'West infinity pool'], [8, 'West backyard'], [9, 'West balconies'], [10, 'East living room'], [11, 'East kitchen'], [12, 'East bedroom 1'], [13, 'East bedroom 2'], [14, 'East bedroom 3'], [15, 'East infinity pool'], [16, 'East balconies'], [17, 'Entrance lobby']] }
   };
