@@ -32,7 +32,8 @@
     'o2-gateway': 'Option 2: the gateway', 'o2-lobby': 'Option 2: a block entrance', 'o2-porte-cochere': 'Option 2: covered drop-off along the street',
     'o2-clubhouse-pool': 'Option 2: the clubhouse and pool', 'o2-pool-pavilion': 'Option 2: the pool pavilion', 'o2-beach-blocks': 'Option 2: the blocks from the water',
     'lobby-1': 'The entrance lobby', 'lobby-2': 'The lobby lounge', 'lobby-3': 'The lobby reception', 'o2-pools': 'Option 2: infinity pools on the balconies',
-    'iso-ground': 'The ground floor in three dimensions', 'iso-typical': 'A typical floor, Levels 2 to 8, in three dimensions', 'iso-pent': 'Level 9 in three dimensions'
+    'iso-ground': 'The ground floor in three dimensions', 'iso-typical': 'A typical floor, Levels 2 to 8, in three dimensions', 'iso-pent': 'Level 9 in three dimensions',
+    'assets/iso/block.png': 'One block, from the water: wings coloured by home type'
   };
   // resolve an asset path; the single-file preview build defines window.__AV with inlined data URIs
   const A = p => {
@@ -43,7 +44,7 @@
     const el = slug && document.querySelector('img[data-full="' + slug + '"]');
     return el ? el.getAttribute('src') : p;
   };
-  const full = slug => A(slug.startsWith('iso-') ? 'assets/plan/iso/' + slug.slice(4) + '.jpg' : 'assets/r/' + slug + '.jpg');
+  const full = slug => A(slug.includes('/') ? slug : slug.startsWith('iso-') ? 'assets/plan/iso/' + slug.slice(4) + '.jpg' : 'assets/r/' + slug + '.jpg');
   const store = { get: k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { /* storage unavailable */ } } };
 
   /* ---------- smooth scroll ---------- */

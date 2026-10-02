@@ -471,7 +471,7 @@ section.band{background:var(--bg2)}
 @media(max-width:760px){.maps{grid-template-columns:1fr;gap:34px;max-width:360px;margin-inline:auto}}
 
 /* program schematic (after Inspiration2 image 2) */
-.program{display:grid;grid-template-columns:3fr 6fr 4fr;gap:clamp(20px,3vw,56px);align-items:center}
+.program{display:grid;grid-template-columns:3fr 5fr 4fr 4fr;gap:clamp(20px,3vw,48px);align-items:center}
 .prog-svg svg{width:100%;height:auto;display:block;overflow:visible}
 .prog-compact{margin:0;text-align:center}
 .prog-compact figcaption{margin-top:18px;font:500 .74rem/1.5 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
@@ -490,7 +490,16 @@ section.band{background:var(--bg2)}
 svg.hl .zone{opacity:.14}
 svg.hl .zone.on{opacity:1}
 .zone path{stroke:rgba(31,34,39,.4);stroke-width:.35;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-@media(max-width:1000px){.program{grid-template-columns:1fr 1fr}.prog-exploded{grid-column:1/-1;order:-1}.prog-exploded svg{max-height:none}}
+.prog-iso{margin:0;display:grid;gap:14px;justify-items:center;text-align:center}
+.prog-iso img{max-height:min(78vh,760px);width:auto;max-width:100%;cursor:zoom-in;filter:drop-shadow(0 24px 40px rgba(31,34,39,.22));transition:transform 1.2s var(--ease)}
+.prog-iso:hover img{transform:translateY(-4px)}
+.prog-iso figcaption{display:grid;gap:10px;justify-items:center}
+.prog-iso figcaption b{font:500 .74rem/1 var(--fb);letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.iso-legend{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;font-size:.78rem;color:var(--ink2)}
+.iso-legend li{display:inline-flex;align-items:center;gap:8px}
+.iso-legend i{display:block;width:18px;height:18px;border-radius:4px;background:var(--c);border:1px solid rgba(31,34,39,.25);flex:none}
+.prog-iso small{font-size:.72rem;color:var(--ink3);max-width:30ch}
+@media(max-width:1000px){.program{grid-template-columns:1fr 1fr}.prog-exploded{grid-column:1/-1;order:-1}.prog-exploded svg{max-height:none}.prog-compact{grid-column:1/-1}.prog-iso img{max-height:60vh}}
 @media(max-width:620px){.program{grid-template-columns:1fr}}
 
 /* residences: numbered plan sheet (after Inspiration2 image 3) */
