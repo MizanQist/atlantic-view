@@ -85,7 +85,7 @@ html.no-anim [data-rv]{opacity:1;transform:none;transition:none}
 /* hero */
 .hero{position:relative;min-height:100vh;min-height:100dvh;display:grid;align-items:end;padding:0 0 clamp(44px,8vh,96px);overflow:hidden}
 .hero .bg{position:absolute;inset:0;z-index:0}
-.hero .bg img{width:100%;height:100%;object-fit:cover;object-position:center 62%;transform:scale(1.1);transition:transform 7s var(--ease)}
+.hero .bg img{width:100%;height:100%;object-fit:cover;object-position:center 55%;transform:scale(1.1);transition:transform 7s var(--ease)}
 .hero.in .bg img{transform:scale(1)}
 .hero .bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 62%;opacity:0;transform:scale(1.1);transition:opacity 1.4s var(--ease),transform 7s var(--ease)}
 .hero.in .bg video{transform:scale(1)}

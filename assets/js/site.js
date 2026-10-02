@@ -126,7 +126,7 @@
   if (heroA && heroB && !reduce && !saveData && heroA.canPlayType('video/mp4')) {
     const LEAD = 1.2;
     let switching = false;
-    heroA.src = A('assets/video/hero' + videoTier()); heroB.src = A('assets/video/close' + videoTier());
+    heroA.src = A('assets/video/close' + videoTier()); heroB.src = A('assets/video/hero' + videoTier());   // Option 2's beach first, then Option 1's marina
     heroA.addEventListener('playing', () => { heroA.classList.add('on'); heroB.load(); }, { once: true });
     heroA.addEventListener('loadeddata', () => tryPlay(heroA), { once: true });
     heroA.addEventListener('timeupdate', () => {

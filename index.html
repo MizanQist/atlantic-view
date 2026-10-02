@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400&family=Manrope:wght@300;400;500;600&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,200,0,0&icon_names=ac_unit,air,beach_access,bolt,child_care,deck,detector_smoke,directions_car,directions_walk,doorbell,elevator,fire_extinguisher,fire_hydrant,fitness_center,kayaking,local_cafe,local_fire_department,local_parking,park,pool,recycling,sailing,security,sensor_door,spa,sports_soccer,sports_tennis,stairs,storefront,videocam,water,water_drop,wifi&display=block">
-<link rel="preload" as="image" href="assets/hero.jpg" media="(min-width: 820px) and (orientation: landscape)">
+<link rel="preload" as="image" href="assets/close-poster.jpg">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body>
@@ -62,11 +62,8 @@
 <!-- 01 Hero -->
 <header class="hero" id="hero">
   <div class="bg">
-    <picture>
-      <source media="(min-width: 820px) and (orientation: landscape)" srcset="assets/hero-s.jpg 1200w, assets/hero.jpg 1856w" sizes="100vw">
-      <img src="assets/m/marina-dusk.jpg" srcset="assets/s/marina-dusk.jpg 1100w, assets/m/marina-dusk.jpg 2000w, assets/r/marina-dusk.jpg 2560w" sizes="(max-width: 900px) 100vw, 60vw" alt="The Atlantic View at dusk, seen from the marina" fetchpriority="high">
-    </picture>
-    <video class="vid" id="herovid" muted playsinline autoplay preload="none" poster="assets/hero.jpg" aria-hidden="true" tabindex="-1"></video>
+    <img src="assets/close-poster.jpg" alt="The Atlantic View from the beach and marina" fetchpriority="high">
+    <video class="vid" id="herovid" muted playsinline autoplay preload="none" poster="assets/close-poster.jpg" aria-hidden="true" tabindex="-1"></video>
     <video class="vid" id="herovid2" muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
   </div>
   <div class="scrim"></div>
