@@ -326,6 +326,131 @@
     }
   }
 
+  /* ---------- location map: Leaflet, loaded when the map comes near (after the Heights 777 brochure) ---------- */
+  (function () {
+    var wrap = $('#lmwrap'), list = $('#lmlist'), panel = $('#lmpanel'); if (!wrap || !('IntersectionObserver' in window)) return;
+    var coarse = matchMedia('(pointer:coarse)').matches, booted = false;
+    function fail() { $('#lmfallback').hidden = false; wrap.classList.add('failed'); }
+    if (window.__AV) { fail(); return; }   // the single-file preview cannot load map tiles
+    function loadScript(src, cb) { var s = document.createElement('script'); s.src = src; s.async = true; s.onload = cb; s.onerror = fail; document.head.appendChild(s); }
+    function boot() {
+      if (booted) return; booted = true;
+      var pending = 3; function done() { if (--pending === 0) { if (window.L && window.AV_MAP) { try { initMap(); } catch (e) { fail(); if (window.console) console.error(e); } } else fail(); } }
+      var css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'assets/leaflet/leaflet.css'; css.onload = done; css.onerror = fail; document.head.appendChild(css);
+      loadScript('assets/leaflet/leaflet.js', done); loadScript('assets/map-data.js', done);
+    }
+    var lio = new IntersectionObserver(function (es) { if (es.some(function (e) { return e.isIntersecting; })) { boot(); lio.disconnect(); } }, { rootMargin: '900px 0px' }); lio.observe(wrap);
+
+    function initMap() {
+      var D = window.AV_MAP, C = { ink: '#1f2227', timber: '#c7955f', deep: '#7d5428', sea: '#6f8f98', bone: '#f6f6f4' };
+      var GROUPS = { estate: { n: 'The estate' }, ikoyi: { n: 'Ikoyi', t: '10' }, vi: { n: 'Victoria Island', t: '15' }, island: { n: 'Lagos Island', t: '15' }, lekki: { n: 'Lekki', t: '15' }, airport: { n: 'The airport', t: '40' } };
+      var FAR = { site: 1, marina: 1, lekki1: 1, airport: 1, eko: 1 }, LEFT = { falomo: 1, marina: 1, ikoyiclub: 1 };
+      var map = L.map('lmap', { zoomControl: false, scrollWheelZoom: false, dragging: !coarse, zoomSnap: .5, minZoom: 10, maxZoom: 20, attributionControl: true, worldCopyJump: false });
+      map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank" rel="noopener">Leaflet</a>');
+      L.control.zoom({ position: 'topleft', zoomInTitle: 'Zoom in', zoomOutTitle: 'Zoom out' }).addTo(map);
+      L.control.scale({ imperial: false, position: 'bottomleft', maxWidth: 130 }).addTo(map);
+      var OSM = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors';
+      var streets = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 20, attribution: OSM });
+      var aerial = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxNativeZoom: 19, maxZoom: 20, attribution: 'Imagery &copy; Esri, Maxar, Earthstar Geographics' });
+      streets.addTo(map);
+      function label(ll, text, cls, transform) { return L.marker(ll, { icon: L.divIcon({ className: 'lm-st ' + cls, html: '<span style="transform:' + transform + '">' + text + '</span>', iconSize: [0, 0] }), interactive: false, keyboard: false }).addTo(map); }
+      function m2ll(ll, dxm, dym) { return [ll[0] + dym / 111320, ll[1] + dxm / 110620]; }
+      [1000, 2000, 5000].forEach(function (r) {
+        L.circle(D.site, { radius: r, color: C.ink, weight: 1, opacity: .3, dashArray: '2 7', fill: false, interactive: false, className: 'lm-ring-l' }).addTo(map);
+        label(m2ll(D.site, 0, r), (r / 1000) + ' km', 'ring', 'translate(-50%,-50%)');
+      });
+      var ST = { main: { color: C.ink, weight: 3, opacity: .5 }, local: { color: C.ink, weight: 2, opacity: .36 }, bridge: { color: C.sea, weight: 3.5, opacity: .95 } };
+      var LABPOS = { bourdillon: [6.4530, 3.4360], osborne: [6.4600, 3.4160], alfred: [6.4480, 3.4160], awolowo: [6.4450, 3.4080], falomo: [6.4410, 3.4190], ozumba: [6.4350, 3.4350], ahmadu: [6.4300, 3.4250], adeola: [6.4300, 3.4200], third: [6.4800, 3.4000], eko: [6.4620, 3.3810], carter: [6.4740, 3.3860], ikorodu: [6.5100, 3.3700], agege: [6.5400, 3.3550], gerrard: [6.4560, 3.4330], glover: [6.4520, 3.4430], banana: [6.4610, 3.4460] };
+      D.streets.forEach(function (s) {
+        s.s.forEach(function (seg) { L.polyline(seg, L.extend({ interactive: false, lineCap: 'round', lineJoin: 'round', className: 'lm-' + s.c }, ST[s.c])).addTo(map); });
+        var pref = LABPOS[s.k]; if (!pref) return;
+        var best = null, bd = 1e9, ang = 0;
+        s.s.forEach(function (seg) { for (var i = 0; i < seg.length; i++) { var p = seg[i], dd = Math.hypot((p[0] - pref[0]) * 111320, (p[1] - pref[1]) * 110620); if (dd < bd) { bd = dd; best = p; var q = seg[i + 1] || seg[i - 1] || p; ang = -Math.atan2((q[0] - p[0]) * 111320, (q[1] - p[1]) * 110620) * 180 / Math.PI; } } });
+        if (ang > 90) ang -= 180; if (ang < -90) ang += 180;
+        label(best, s.n, (s.c === 'main' || s.c === 'bridge') ? '' : 'near', 'translate(-50%,-50%) rotate(' + ang.toFixed(1) + 'deg) translateY(-11px)');
+      });
+      L.polygon(D.plot, { color: C.deep, weight: 1.5, dashArray: '4 4', fillColor: C.timber, fillOpacity: .22, className: 'lm-plot', interactive: false }).addTo(map);
+      var byId = {}, markers = {}, rows = {}, n = 0, routeLayer = null, caseLayer = null;
+      function popupHTML(Lm) {
+        var isSite = Lm.id === 'site', G = GROUPS[Lm.g];
+        var k = isSite ? 'The site' : (Lm.num + ' · ' + G.n);
+        var meta = isSite ? '<span><b>48,520</b>m² plot</span><span><b>322</b>residences</span>' : (Lm.km ? '<span><b>' + Lm.km.toFixed(1) + '</b>km by road</span>' : '') + (G.t ? '<span><b>' + G.t + '</b>min off-peak</span>' : '');
+        var href = isSite ? 'https://www.google.com/maps/search/?api=1&query=' + D.site[0] + '%2C' + D.site[1] : 'https://www.google.com/maps/dir/?api=1&origin=' + D.site[0] + '%2C' + D.site[1] + '&destination=' + Lm.ll[0] + '%2C' + Lm.ll[1] + '&travelmode=driving';
+        return '<div class="lm-pop"><span class="k">' + k + '</span><span class="n">' + Lm.n + '</span><span class="s">' + Lm.s + '</span><div class="m">' + meta + '</div><a class="a" href="' + href + '" target="_blank" rel="noopener">' + (isSite ? 'Open in Google Maps' : 'Directions from the site') + ' ↗</a></div>';
+      }
+      D.landmarks.forEach(function (Lm) {
+        var isSite = Lm.id === 'site'; Lm.num = isSite ? '' : String(++n).padStart(2, '0'); byId[Lm.id] = Lm;
+        var icon = L.divIcon({ className: 'lm-pin' + (isSite ? ' lm-site' : '') + (FAR[Lm.id] ? ' far' : '') + (LEFT[Lm.id] ? ' l' : ''), html: '<i>' + Lm.num + '</i><b>' + Lm.n + '</b>', iconSize: [0, 0] });
+        var m = L.marker(Lm.ll, { icon: icon, alt: Lm.n, riseOnHover: true, zIndexOffset: isSite ? 1000 : 0 }).addTo(map);
+        m.bindPopup(popupHTML(Lm), { offset: [0, -16], maxWidth: Math.min(300, wrap.clientWidth - 56), minWidth: 200, autoPanPadding: [28, 64], className: 'lm-popw' });
+        m.on('click', function () { select(Lm.id, false); });
+        m.on('mouseover', function () { hi(Lm.id, true); }); m.on('mouseout', function () { hi(Lm.id, false); });
+        markers[Lm.id] = m;
+      });
+      var lastG = null, ri = 0;
+      D.landmarks.forEach(function (Lm) {
+        if (Lm.g !== lastG) { lastG = Lm.g; var G = GROUPS[Lm.g], g = document.createElement('li'); g.className = 'g'; g.innerHTML = '<span>' + G.n + '</span>' + (G.t ? '<b>' + G.t + '<small>min</small></b>' : ''); list.appendChild(g); }
+        var li = document.createElement('li'), b = document.createElement('button'); b.type = 'button'; b.className = 'lm-row' + (Lm.id === 'site' ? ' site' : ''); b.dataset.id = Lm.id; b.setAttribute('aria-pressed', 'false'); b.style.setProperty('--i', ri++);
+        var dist = Lm.id === 'site' ? '<span class="d">48,520<small>m²</small></span>' : (Lm.km ? '<span class="d">' + Lm.km.toFixed(1) + '<small>km</small></span>' : '');
+        b.innerHTML = '<span class="i">' + Lm.num + '</span><span class="t">' + Lm.n + '<small>' + Lm.s + '</small></span>' + dist;
+        b.addEventListener('click', function () { select(Lm.id, true); });
+        b.addEventListener('mouseenter', function () { hi(Lm.id, true); }); b.addEventListener('mouseleave', function () { hi(Lm.id, false); });
+        b.addEventListener('focus', function () { hi(Lm.id, true); }); b.addEventListener('blur', function () { hi(Lm.id, false); });
+        li.appendChild(b); list.appendChild(li); rows[Lm.id] = b;
+      });
+      function hi(id, on) { var e = markers[id].getElement(); if (e) e.classList.toggle('hi', on); rows[id].classList.toggle('hi', on); }
+      function clearAnim() { [routeLayer, caseLayer].forEach(function (l) { var p = l && l._path; if (p) { p.style.transition = 'none'; p.style.strokeDasharray = ''; p.style.strokeDashoffset = ''; } }); }
+      function animatePath(l, dur) { var p = l && l._path; if (!p || !p.getTotalLength) return; var len = p.getTotalLength(); p.style.transition = 'none'; p.style.strokeDasharray = len + ' ' + len; p.style.strokeDashoffset = len; void p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset ' + dur + 's cubic-bezier(.16,.84,.24,1)'; p.style.strokeDashoffset = '0'; }
+      function drawRoute(id) {
+        if (routeLayer) { map.removeLayer(routeLayer); map.removeLayer(caseLayer); routeLayer = caseLayer = null; }
+        var R = D.routes[id]; if (!R) return;
+        caseLayer = L.polyline(R.pts, { color: C.bone, weight: 7, opacity: .92, interactive: false, lineCap: 'round', lineJoin: 'round', className: 'lm-case' }).addTo(map);
+        routeLayer = L.polyline(R.pts, { color: C.deep, weight: 3, opacity: 1, interactive: false, lineCap: 'round', lineJoin: 'round', className: 'lm-route' }).addTo(map);
+        if (!reduce) { var dur = R.km > 10 ? 2.2 : 1.5; animatePath(caseLayer, dur); animatePath(routeLayer, dur); setTimeout(clearAnim, dur * 1000 + 100); }
+      }
+      map.on('zoomstart', clearAnim);
+      function select(id, fly) {
+        var Lm = byId[id];
+        for (var k in rows) { rows[k].classList.toggle('on', k === id); rows[k].setAttribute('aria-pressed', k === id); var e = markers[k].getElement(); if (e) e.classList.toggle('on', k === id); }
+        var row = rows[id]; if (row) list.scrollTop = Math.max(0, row.offsetTop - list.clientHeight / 2 + row.offsetHeight / 2);
+        if (!fly) { drawRoute(id); return; }
+        map.closePopup();
+        var R = D.routes[id], b;
+        if (id === 'site') b = null; else if (R) b = L.latLngBounds(R.pts).extend(Lm.ll).extend(D.site); else b = L.latLngBounds([Lm.ll, D.site]);
+        var after = function () { drawRoute(id); markers[id].openPopup(); };
+        if (reduce) { if (b) map.fitBounds(b, { padding: [56, 56], maxZoom: 16.5 }); else map.setView(D.site, 17); after(); return; }
+        map.once('moveend', after);
+        if (b) map.flyToBounds(b, { padding: [56, 56], maxZoom: 16.5, duration: 1.4 }); else map.flyTo(D.site, 17, { duration: 1.4 });
+      }
+      function zclass() { var z = map.getZoom(); wrap.classList.toggle('z-far', z < 14); wrap.classList.toggle('z-mid', z >= 14 && z < 16); wrap.classList.toggle('z-near', z >= 16); }
+      map.on('zoomend', zclass);
+      var IKOYI = D.landmarks.filter(function (l) { return ['site', 'banana', 'ikoyiclub', 'falomo', 'linkbridge'].indexOf(l.id) >= 0; }).map(function (l) { return l.ll; });
+      var ALL = D.landmarks.map(function (l) { return l.ll; });
+      var VIEWS = {
+        close: function (a) { a ? map.flyToBounds(L.latLngBounds(D.plot), { padding: [60, 60], duration: 1.6 }) : map.fitBounds(L.latLngBounds(D.plot), { padding: [60, 60] }); },
+        ikoyi: function (a) { var o = { padding: [40, 40] }; a ? map.flyToBounds(L.latLngBounds(IKOYI), L.extend({ duration: 1.6 }, o)) : map.fitBounds(L.latLngBounds(IKOYI), o); },
+        city: function (a) { var o = { padding: [36, 36] }; a ? map.flyToBounds(L.latLngBounds(ALL), L.extend({ duration: 1.8 }, o)) : map.fitBounds(L.latLngBounds(ALL), o); }
+      };
+      $$('[data-view]').forEach(function (x) { x.addEventListener('click', function () { map.closePopup(); VIEWS[x.dataset.view](!reduce); }); });
+      function setBase(b) {
+        if (b === 'aerial') { map.removeLayer(streets); aerial.addTo(map); } else { map.removeLayer(aerial); streets.addTo(map); }
+        wrap.classList.toggle('aerial', b === 'aerial');
+        $$('[data-base]').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.base === b); });
+      }
+      $$('[data-base]').forEach(function (x) { x.addEventListener('click', function () { setBase(x.dataset.base); }); });
+      var hint = $('#lmhint');
+      map.on('click focus', function () { map.scrollWheelZoom.enable(); hint.classList.add('off'); });
+      setTimeout(function () { hint.classList.add('off'); }, 8000);
+      map.on('blur', function () { map.scrollWheelZoom.disable(); });
+      wrap.addEventListener('mouseleave', function () { map.scrollWheelZoom.disable(); });
+      var lock = $('#lmlock');
+      lock.addEventListener('click', function () { var on = !map.dragging.enabled(); if (on) map.dragging.enable(); else map.dragging.disable(); lock.setAttribute('aria-pressed', on); lock.textContent = on ? 'Done exploring' : 'Touch to explore'; });
+      VIEWS.ikoyi(false); zclass();
+      map.whenReady(function () { requestAnimationFrame(function () { wrap.classList.add('ready'); panel.classList.add('in'); map.invalidateSize(); }); });
+      addEventListener('load', function () { map.invalidateSize(); });
+    }
+  })();
+
   /* ---------- residences: the architects' unit sheets, plus the whole lower and pent floors ---------- */
   const SH = PD.sheets || {};
   const UNITS = {

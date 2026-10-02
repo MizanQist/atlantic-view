@@ -119,7 +119,37 @@
       <figure class="map"><div class="mp" id="map-local"></div><figcaption>Parkview</figcaption></figure>
       <figure class="map aerial"><div class="mp" id="map-aerial"><img src="assets/map/aerial.jpg" alt="Satellite view of the site at Parkview Estate, Ikoyi"><div class="sitepin" aria-hidden="true"><span>Solera</span><svg viewBox="-16 -31 32 41"><path d="M0-30c-8.3 0-15 6.7-15 15 0 11 15 24 15 24s15-13 15-24c0-8.3-6.7-15-15-15zm0 21a6 6 0 110-12 6 6 0 010 12z"/></svg></div></div><figcaption>Solera</figcaption></figure>
     </div>
-    <p class="loc-note" data-rv>Outlines from OpenStreetMap contributors. Satellite imagery Esri, Maxar, Earthstar Geographics and the GIS User Community.</p>
+    <div class="locmap" id="locmap" data-rv>
+      <div class="lm-head">
+        <div>
+          <h3>The estate, the island and every place named on this page, on one map.</h3>
+        </div>
+        <div class="lm-ctl">
+          <div class="lm-seg" role="group" aria-label="Map style">
+            <button type="button" data-base="streets" aria-pressed="true">Streets</button>
+            <button type="button" data-base="aerial" aria-pressed="false">Aerial</button>
+          </div>
+          <div class="lm-seg" role="group" aria-label="Map extent">
+            <button type="button" data-view="close">The plot</button>
+            <button type="button" data-view="ikoyi">Ikoyi</button>
+            <button type="button" data-view="city">Lagos</button>
+          </div>
+        </div>
+      </div>
+      <div class="lm-grid">
+        <div class="lm-map" id="lmwrap">
+          <div id="lmap" role="region" aria-label="Interactive map of The Atlantic View at Parkview Estate, Ikoyi, and the places around it: Banana Island, Ikoyi Club, Awolowo Road, the Lekki-Ikoyi Link Bridge, Eko Hotels, Marina on Lagos Island, Lekki Phase 1 and Murtala Muhammed International Airport."></div>
+          <div class="lm-hint" id="lmhint">Click the map, then scroll to zoom</div>
+          <div class="lm-lock"><button type="button" id="lmlock" aria-pressed="false">Touch to explore</button></div>
+          <p class="lm-fallback" id="lmfallback" hidden>The interactive map runs on the live site.&nbsp;<a href="https://the-atlantic-view.vercel.app/#location" target="_blank" rel="noopener">Open it there</a> or <a href="https://www.google.com/maps/search/?api=1&amp;query=6.4635766%2C3.4371828" target="_blank" rel="noopener">in Google Maps</a>.</p>
+        </div>
+        <div class="lm-panel" id="lmpanel">
+          <ul class="lm-list" id="lmlist"></ul>
+          <p class="lm-foot">Distances are by road from the site, routed on OpenStreetMap; drive times are approximate and off-peak. The plot outline is indicative: the surveyed boundary from the master layout, centred on the site.</p>
+        </div>
+      </div>
+    </div>
+    <p class="loc-note" data-rv>Outlines and map data from OpenStreetMap contributors. Satellite imagery Esri, Maxar, Earthstar Geographics and the GIS User Community. Routes by OSRM.</p>
   </div>
 </section>
 
