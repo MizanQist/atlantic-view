@@ -767,31 +767,33 @@ html.no-anim .sp-pop{transform:none;opacity:1;animation:none}
 html.no-anim .sp-bound-draw,html.no-anim .sp-ripple,html.no-anim .sp-dot{display:none}
 @media(max-width:700px){.sp-road{stroke-width:1.4}.sp-shore path{stroke-width:1.6}.sp-bld{stroke-width:2}.sp-bound{stroke-width:1.7;stroke-dasharray:12 4 2 4}.sp-route{stroke-width:3.4}.sp-boat{stroke-width:1.1}.sp-dot-core{r:5}.sp-dot-glow{r:13}.sp-replay{padding:8px 11px;font-size:.6rem}}
 
-/* ---------- solar study ---------- */
+/* ---------- solar study: section through a west balcony ---------- */
 .so-cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(24px,3.5vw,56px);align-items:start}
-.so-fig{position:relative;border-radius:var(--r);overflow:hidden;background:#f4f4f2;border:1px solid var(--line)}
-.solarplan{display:block;width:100%;height:auto;font-family:var(--fd)}
-.so-land{fill:#f4f4f2}
-.so-water{fill:#c9d6e2}
-.so-roads path{fill:none;stroke:#b4b4b1;stroke-width:.7;stroke-linecap:round;stroke-linejoin:round}
-.so-green path{fill:#cddcc6;stroke:#bccfb3;stroke-width:.4}
-.so-bound{fill:none;stroke:var(--acc);stroke-width:1;stroke-dasharray:9 3 1.5 3;opacity:.8}
-.so-piers path{fill:none;stroke:#7d5428;stroke-width:.9;opacity:.6}
-.so-shadow{fill:#1f2227;fill-opacity:.24;transition:fill-opacity .4s}
-.so-fig.night .so-shadow{fill-opacity:0}
-.so-bld{fill:#e6e2dc;stroke:var(--ink);stroke-width:.9;stroke-linejoin:round}
-.so-club{fill:#dfd9d0}
-.so-plaza{fill:#dcd6cc}
-.so-compass circle{fill:none;stroke:rgba(31,34,39,.22);stroke-width:.8;stroke-dasharray:2 4}
-.so-compass line{stroke:rgba(31,34,39,.3);stroke-width:.8}
-.so-compass text{font:300 13px/1 var(--fd);letter-spacing:.2em;fill:var(--ink2);text-anchor:middle}
-.so-arc{fill:none;stroke:var(--acc2);stroke-width:1.4;stroke-dasharray:3 5;opacity:.9}
-.so-ray{stroke:var(--acc2);stroke-width:1;stroke-dasharray:4 5;opacity:.7}
-.so-sunmark .so-core{fill:#e2ad55;stroke:#f6f6f4;stroke-width:1.5}
-.so-sunmark{transition:opacity .4s}
-.so-fig.night .so-sunmark,.so-fig.night .so-ray{opacity:0}
-.so-fig.night .so-land{fill:#e8e8e6}
-.so-fig.night .so-water{fill:#bccbd9}
+.sunlab{position:relative;border-radius:var(--r);overflow:hidden;background:#f4f4f2;border:1px solid var(--line);padding:clamp(12px,1.8vw,24px)}
+.sunlab svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--fb)}
+.sk-sky{fill:#e6ecf1}
+.sk-room{fill:#f7f6f3}
+.sk-slab{fill:#d9d5ce;stroke:var(--ink);stroke-width:.45}
+.sk-wall{fill:#cfcbc4;stroke:var(--ink);stroke-width:.4}
+.sk-glass{fill:#8fb0c7;opacity:.5}
+.sk-rail{fill:#9fb4c6;opacity:.4}
+.sk-water{fill:#6f9bbd;opacity:.8}
+.sk-basin{fill:#cfcbc4;stroke:var(--ink);stroke-width:.35}
+.sk-shade{fill:#1f2227;opacity:.2}
+.sk-sun{fill:#e2ad55;filter:drop-shadow(0 0 4px rgba(226,173,85,.9))}
+.sk-ray{stroke:#b9823f;stroke-width:.4;stroke-dasharray:1.2 1.5;opacity:.85}
+.sk-arc{fill:none;stroke:rgba(31,34,39,.32);stroke-width:.35;stroke-dasharray:1 1.6}
+.sk-tick{stroke:rgba(31,34,39,.4);stroke-width:.3}
+.sk-horizon{stroke:rgba(31,34,39,.28);stroke-width:.3;stroke-dasharray:2 1.5}
+.sk-txt{font-size:2.6px;letter-spacing:.16em;text-transform:uppercase;fill:var(--ink2);font-weight:500}
+.sk-txt.b{font-family:var(--fd);font-size:5px;letter-spacing:0;text-transform:none;fill:var(--ink);font-weight:400}
+.sk-txt.w{fill:#f6f6f4}
+.sk-dim{stroke:rgba(31,34,39,.5);stroke-width:.25;fill:none}
+.sk-people{fill:none;stroke:var(--ink);stroke-width:.45;stroke-linecap:round}
+.sk-behind{font-size:3px;letter-spacing:.14em;text-transform:uppercase;fill:var(--ink2);opacity:0;transition:opacity .3s}
+.sunlab.behind .sk-behind{opacity:1}
+.sunlab.behind .sk-sun,.sunlab.behind .sk-ray{opacity:0}
+.sk-sun,.sk-ray{transition:opacity .3s}
 .so-side{display:grid;gap:22px}
 .so-ctrl label{display:flex;justify-content:space-between;align-items:baseline;font:500 .7rem/1 var(--fb);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);margin-bottom:12px}
 .so-ctrl label span{font:300 1.6rem/1 var(--fd);letter-spacing:0;text-transform:none;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -800,12 +802,11 @@ html.no-anim .sp-bound-draw,html.no-anim .sp-ripple,html.no-anim .sp-dot{display
 .so-seasons .tab small{font-size:.66rem;opacity:.65;font-weight:500}
 .so-read{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px;padding:18px 20px;border-radius:var(--r);background:var(--bg3);border:1px solid var(--line)}
 .so-read .n{font:200 1.7rem/1 var(--fd);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
-.so-read #so-az{font-size:1.35rem;line-height:1.15;white-space:normal;text-transform:capitalize}
 .so-read .n small{font-size:.8rem;margin-left:3px;color:var(--ink2)}
 .so-read .l{font-size:.72rem;color:var(--ink2);margin-top:6px;line-height:1.3}
 .so-facts{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:.88rem;color:var(--ink2);line-height:1.5}
 .so-facts b{color:var(--ink);font-weight:600}
 .solar .hint{font-size:.76rem;color:var(--ink3);margin:0}
 @media(max-width:900px){.so-cols{grid-template-columns:1fr}}
-@media(max-width:560px){.so-compass text{font-size:18px}.so-seasons .tab small{display:none}}
-html.no-anim .so-shadow,html.no-anim .so-sunmark{transition:none}
+@media(max-width:560px){.so-seasons .tab small{display:none}}
+html.no-anim .sk-sun,html.no-anim .sk-ray,html.no-anim .sk-behind{transition:none}

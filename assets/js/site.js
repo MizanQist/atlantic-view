@@ -668,94 +668,106 @@
     }));
   }
 
-  /* ---------- solar study: the blocks' shadows on the plan for a time and season ---------- */
+  /* ---------- solar study: a section through a west-facing balcony, after the Governor's Lodge brochure ---------- */
   (() => {
-    const SO = window.SP_SOLAR, fig = $('#sofig'), hour = $('#sohour'), lab = $('#sohourlab');
-    if (!SO || !fig || !hour) return;
-    const shadow = $('#soshadow'), arc = $('#soarc'), ray = $('#soray'), mark = $('#sosunmark');
-    const rAlt = $('#so-alt'), rAz = $('#so-az'), rLen = $('#so-len'), rCnt = $('#so-cnt');
-    const D2R = Math.PI / 180, LAT = SO.lat * D2R;
+    const svg = $('#sunsvg'), lab = $('#sunlab'), hour = $('#sohour'), hourlab = $('#sohourlab');
+    if (!svg || !hour) return;
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const el = (tag, attrs, parent) => { const n = document.createElementNS(SVGNS, tag); Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k])); (parent || svg).appendChild(n); return n; };
+    const txt = (x, y, t, cls, attrs) => { const n = el('text', Object.assign({ x, y, 'class': cls }, attrs || {})); n.textContent = t; return n; };
+    /* geometry from the drawings: 4.0 m floor to floor, a 4.0 m balcony with the 2.2 m infinity pool at its edge */
+    const S = 16, FLOOR = 140, EDGE = 130, DEPTH = 4.0, WALL = EDGE + DEPTH * S, FF = FLOOR - 4.0 * S, SLAB = 0.3 * S, RAIL = 1.1 * S;
+    const SOFFIT = FF + SLAB, GLASS_H = FLOOR - SOFFIT, POOL0 = EDGE + 0.5 * S, POOL1 = EDGE + 2.7 * S, R = 118;
+    el('rect', { 'class': 'sk-sky', x: 0, y: 0, width: 300, height: 172 });
+    el('line', { 'class': 'sk-horizon', x1: 0, y1: FLOOR + 14, x2: EDGE - 4, y2: FLOOR + 14 });
+    txt(4, FLOOR + 20, 'The lagoon, west', 'sk-txt');
+    el('rect', { 'class': 'sk-room', x: WALL, y: 0, width: 300 - WALL, height: 172 });
+    el('rect', { 'class': 'sk-glass', x: WALL - 1.4, y: 0, width: 2.8, height: FF });                   /* the floor above's glazing */
+    el('rect', { 'class': 'sk-glass', x: WALL - 1.4, y: FLOOR + SLAB, width: 2.8, height: 172 - FLOOR - SLAB }); /* the floor below */
+    el('rect', { 'class': 'sk-rail', x: EDGE, y: FF - RAIL, width: 1.2, height: RAIL });
+    el('rect', { 'class': 'sk-water', x: POOL0, y: FF - 1.2, width: POOL1 - POOL0, height: SLAB });
+    el('rect', { 'class': 'sk-slab', x: EDGE, y: FF, width: 300 - EDGE, height: SLAB });               /* the balcony above: the sunshade */
+    const shade = el('polygon', { 'class': 'sk-shade', points: '' });
+    el('rect', { 'class': 'sk-glass', x: WALL - 1.4, y: SOFFIT, width: 2.8, height: GLASS_H });        /* the living room glazing */
+    el('rect', { 'class': 'sk-slab', x: EDGE, y: FLOOR, width: 300 - EDGE, height: SLAB });
+    el('rect', { 'class': 'sk-basin', x: POOL0 - 1.5, y: FLOOR + SLAB - .2, width: POOL1 - POOL0 + 3, height: 0.5 * S });
+    el('rect', { 'class': 'sk-water', x: POOL0, y: FLOOR - 1.2, width: POOL1 - POOL0, height: SLAB + 0.45 * S });
+    el('rect', { 'class': 'sk-rail', x: EDGE, y: FLOOR - RAIL, width: 1.2, height: RAIL });
+    const px = WALL - 0.75 * S, ph = 1.75 * S, py = FLOOR - ph;                                        /* someone on the deck, looking out */
+    el('circle', { 'class': 'sk-people', cx: px, cy: py + 2.2, r: 2.2 });
+    el('path', { 'class': 'sk-people', d: 'M' + px + ',' + (py + 4.4) + ' V' + (py + 16) + ' M' + (px - 4) + ',' + (py + 9) + ' H' + (px + 4) + ' M' + px + ',' + (py + 16) + ' L' + (px - 3) + ',' + FLOOR + ' M' + px + ',' + (py + 16) + ' L' + (px + 3) + ',' + FLOOR });
+    txt((WALL + 300) / 2, SOFFIT + 26, 'Living room', 'sk-txt b', { 'text-anchor': 'middle' });
+    txt((WALL + 300) / 2, 30, 'Level above', 'sk-txt b', { 'text-anchor': 'middle' });
+    txt(EDGE + 2, SOFFIT + 6, 'Balcony', 'sk-txt');
+    txt((POOL0 + POOL1) / 2, FLOOR + SLAB + 0.5 * S + 5, 'Infinity pool', 'sk-txt', { 'text-anchor': 'middle' });
+    el('path', { 'class': 'sk-dim', d: 'M' + EDGE + ',' + (FF - RAIL - 10) + ' V' + (FF - RAIL - 6) + ' M' + WALL + ',' + (FF - RAIL - 10) + ' V' + (FF - RAIL - 6) + ' M' + EDGE + ',' + (FF - RAIL - 8) + ' H' + WALL });
+    txt((EDGE + WALL) / 2, FF - RAIL - 11, '4.0 m balcony', 'sk-txt', { 'text-anchor': 'middle' });
+    el('path', { 'class': 'sk-dim', d: 'M291,' + FF + ' H297 M291,' + FLOOR + ' H297 M294,' + FF + ' V' + FLOOR });
+    txt(290, (FF + FLOOR) / 2 + 1, '4.0 m floor to floor', 'sk-txt', { 'text-anchor': 'end', transform: 'rotate(-90 290 ' + ((FF + FLOOR) / 2 + 1) + ')' });
+    txt(WALL + 3, FF - 2, '+4.0', 'sk-txt'); txt(WALL + 3, FLOOR - 2, '0', 'sk-txt');
+    el('path', { 'class': 'sk-arc', d: 'M' + (EDGE - R) + ',' + FLOOR + ' A' + R + ' ' + R + ' 0 0 1 ' + EDGE + ',' + (FLOOR - R) });
+    [15, 30, 45, 60, 75].forEach(a => { const c = Math.cos(a * Math.PI / 180), s = Math.sin(a * Math.PI / 180); el('line', { 'class': 'sk-tick', x1: EDGE - (R - 2.5) * c, y1: FLOOR - (R - 2.5) * s, x2: EDGE - (R + 2.5) * c, y2: FLOOR - (R + 2.5) * s }); if (a % 30 === 0) txt(EDGE - (R + 8) * c, FLOOR - (R + 8) * s + 1, a + '°', 'sk-txt', { 'text-anchor': 'middle' }); });
+    txt(EDGE - R + 2, FLOOR - 3, 'Sun angle in the section', 'sk-txt');
+    const behind = txt(EDGE - R + 2, FLOOR - 40, 'Sun behind the block: the balcony is in its own shade', 'sk-behind');
+    const ray = el('line', { 'class': 'sk-ray' });
+    const sun = el('circle', { 'class': 'sk-sun', r: 5 });
+    const rAlt = $('#so-alt'), rShade = $('#so-shade'), rReach = $('#so-reach'), rPool = $('#so-pool');
+    const D2R = Math.PI / 180, LAT = 6.4636 * D2R, LON = 3.4372, TZ = 1, FACADE = 283 * D2R;   /* the lagoon front faces west-north-west */
     let doy = 355;
-    const area = r => { let a = 0; for (let i = 0; i < r.length; i++) { const p = r[i], q = r[(i + 1) % r.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; };
-    const rings = Object.entries(SO.foot).map(([id, f]) => ({ id, h: f.h, pts: area(f.pts) < 0 ? f.pts.slice().reverse() : f.pts.slice() }));
-    const blocks = rings.filter(r => /^b\d/.test(r.id));
-    /* NOAA sun position for local clock time (hours) on a day of the year */
-    const sun = h => {
+    const sunPos = h => {
       const g = 2 * Math.PI / 365 * (doy - 1 + (h - 12) / 24);
       const eot = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
       const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
-      const tst = h * 60 + eot + 4 * SO.lon - 60 * SO.tz;
-      const ha = (tst / 4 - 180) * D2R;
+      const ha = ((h * 60 + eot + 4 * LON - 60 * TZ) / 4 - 180) * D2R;
       const sinAlt = Math.sin(LAT) * Math.sin(dec) + Math.cos(LAT) * Math.cos(dec) * Math.cos(ha);
       const alt = Math.asin(Math.max(-1, Math.min(1, sinAlt)));
-      const cosAz = (Math.sin(dec) - Math.sin(LAT) * sinAlt) / (Math.cos(LAT) * Math.cos(alt) || 1e-9);
-      let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
+      let az = Math.acos(Math.max(-1, Math.min(1, (Math.sin(dec) - Math.sin(LAT) * sinAlt) / (Math.cos(LAT) * Math.cos(alt) || 1e-9))));
       if (ha > 0) az = 2 * Math.PI - az;
       return { alt, az };
     };
-    const sub = r => 'M' + r.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('L') + 'Z';
-    const shift = (r, dx, dy) => r.map(p => [p[0] + dx, p[1] + dy]);
-    const shadowOf = (r, dx, dy) => {           /* footprint, its copy at the shadow tip and a quad per edge: one path, nonzero fill = the union */
-      let d = sub(r.pts) + sub(shift(r.pts, dx, dy));
-      for (let i = 0; i < r.pts.length; i++) {
-        const a = r.pts[i], b = r.pts[(i + 1) % r.pts.length];
-        const q = [a, b, [b[0] + dx, b[1] + dy], [a[0] + dx, a[1] + dy]];
-        d += sub(area(q) < 0 ? q.reverse() : q);
-      }
-      return d;
-    };
-    const inside = (p, r) => { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const a = r[i], b = r[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
-    const shaded = (blk, other, dx, dy) => {    /* does any corner of blk fall in the shadow of other? */
-      const tip = shift(other.pts, dx, dy);
-      return blk.pts.some((p, k) => k % 2 === 0 && (inside(p, tip) || other.pts.some((a, i) => { const b = other.pts[(i + 1) % other.pts.length]; return inside(p, [a, b, [b[0] + dx, b[1] + dy], [a[0] + dx, a[1] + dy]]); })));
-    };
-    const COMPASS = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
-    const pos = (az, k) => [SO.cx + SO.r * k * Math.sin(az), SO.cy - SO.r * k * Math.cos(az)];
-    const dayArc = () => {                      /* the sun's path for the day on the compass ring, sunrise to sunset */
-      const pts = [];
-      for (let h = 4; h <= 21; h += 0.1) { const s = sun(h); if (s.alt > 0) pts.push(pos(s.az, 1)); }
-      arc.setAttribute('d', pts.length ? 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('L') : '');
-    };
+    const full = EDGE + ',' + SOFFIT + ' ' + WALL + ',' + SOFFIT + ' ' + WALL + ',' + FLOOR + ' ' + EDGE + ',' + FLOOR;
     const update = () => {
-      const h = parseFloat(hour.value), s = sun(h), deg = s.alt / D2R;
+      const h = parseFloat(hour.value), s = sunPos(h), deg = s.alt / Math.PI * 180;
       const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
-      lab.textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
-      if (deg <= 0.5) {
-        fig.classList.add('night'); shadow.setAttribute('d', '');
-        rAlt.textContent = '0'; rAz.textContent = h < 12 ? 'before sunrise' : 'after sunset'; rLen.textContent = '—'; rCnt.textContent = '—';
+      hourlab.textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+      const rel = Math.cos(s.az - FACADE);
+      rAlt.textContent = Math.max(0, Math.round(deg));
+      if (deg <= 0.5 || rel <= 0.03) {                       /* night, or the sun is on the other side of the block */
+        lab.classList.add('behind'); shade.setAttribute('points', full);
+        behind.textContent = deg <= 0.5 ? (h < 12 ? 'Before sunrise' : 'After sunset') : 'Sun behind the block: the balcony is in its own shade';
+        rShade.textContent = '100'; rReach.textContent = '0.0'; rPool.textContent = '0';
         return;
       }
-      fig.classList.remove('night');
-      const lenM = Math.min(600, 40.5 / Math.tan(s.alt));
-      const ux = -Math.sin(s.az), uy = Math.cos(s.az);
-      let d = '', count = 0;
-      rings.forEach(r => { const L = Math.min(900, r.h / Math.tan(s.alt)) / SO.mpp; d += shadowOf(r, ux * L, uy * L); });
-      shadow.setAttribute('d', d);
-      blocks.forEach(b => { if (rings.some(o => o !== b && shaded(b, o, ux * Math.min(900, o.h / Math.tan(s.alt)) / SO.mpp, uy * Math.min(900, o.h / Math.tan(s.alt)) / SO.mpp))) count++; });
-      const [sx, sy] = pos(s.az, 1), [ex, ey] = pos(s.az, .18);
-      mark.setAttribute('transform', 'translate(' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ')');
-      ray.setAttribute('x1', sx.toFixed(1)); ray.setAttribute('y1', sy.toFixed(1)); ray.setAttribute('x2', ex.toFixed(1)); ray.setAttribute('y2', ey.toFixed(1));
-      rAlt.textContent = Math.round(deg);
-      rAz.textContent = COMPASS[Math.round(s.az / D2R / 45) % 8];
-      rLen.textContent = lenM >= 100 ? Math.round(lenM) : lenM.toFixed(1);
-      rCnt.textContent = count;
+      lab.classList.remove('behind');
+      const p = Math.atan(Math.tan(s.alt) / rel), t = Math.tan(p);       /* the sun's angle in the plane of the section */
+      sun.setAttribute('cx', EDGE - R * Math.cos(p)); sun.setAttribute('cy', FLOOR - R * Math.sin(p));
+      const hit = SOFFIT + (WALL - EDGE) * t;                              /* where the shade line from the slab edge lands */
+      let pts, reach, end;
+      if (hit < FLOOR) { pts = EDGE + ',' + SOFFIT + ' ' + WALL + ',' + SOFFIT + ' ' + WALL + ',' + hit.toFixed(2); reach = DEPTH; end = [WALL, hit]; }
+      else { const xf = EDGE + (FLOOR - SOFFIT) / t; pts = EDGE + ',' + SOFFIT + ' ' + WALL + ',' + SOFFIT + ' ' + WALL + ',' + FLOOR + ' ' + xf.toFixed(2) + ',' + FLOOR; reach = (xf - EDGE) / S; end = [xf, FLOOR]; }
+      shade.setAttribute('points', pts);
+      ray.setAttribute('x1', EDGE - R * Math.cos(p)); ray.setAttribute('y1', FLOOR - R * Math.sin(p)); ray.setAttribute('x2', end[0]); ray.setAttribute('y2', end[1]);
+      const lit = EDGE + reach * S;
+      rShade.textContent = Math.round(Math.max(0, Math.min(1, (Math.min(hit, FLOOR) - SOFFIT) / GLASS_H)) * 100);
+      rReach.textContent = Math.min(DEPTH, reach).toFixed(1);
+      rPool.textContent = Math.round(Math.max(0, Math.min(1, (lit - POOL0) / (POOL1 - POOL0))) * 100);
     };
     hour.addEventListener('input', update);
     $$('#soseason .tab').forEach(b => b.addEventListener('click', () => {
       $$('#soseason .tab').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-      doy = parseInt(b.dataset.doy, 10); dayArc(); update();
+      doy = parseInt(b.dataset.doy, 10); update();
     }));
-    dayArc(); update();
-    /* first sight of the study: the morning sweeps through to the afternoon, as in the lodge brochure */
+    update();
+    /* first sight: midday sweeps through to the late afternoon, when this balcony takes its sun */
     if (!reduce && 'IntersectionObserver' in window) {
       const swio = new IntersectionObserver(es => {
         if (!es.some(e => e.isIntersecting)) return;
         swio.disconnect();
-        const from = 7.5, to = 15, dur = 3600; let t0 = null;
-        const step = ts => { if (t0 === null) t0 = ts; const p = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - p, 3); hour.value = (from + (to - from) * e).toFixed(2); update(); if (p < 1) requestAnimationFrame(step); };
+        const from = 12, to = 17, dur = 3800; let t0 = null;
+        const step = ts => { if (t0 === null) t0 = ts; const q = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - q, 3); hour.value = (from + (to - from) * e).toFixed(2); update(); if (q < 1) requestAnimationFrame(step); };
         hour.value = from; requestAnimationFrame(step);
       }, { threshold: .4 });
-      swio.observe(fig);
+      swio.observe(lab);
     }
   })();
 
