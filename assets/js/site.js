@@ -650,10 +650,13 @@
       const show = () => { hl(s.id); mcard.innerHTML = '<div class="cnt">' + (s.detail.match(/^[\d,]+ sqm/) ? s.detail.match(/^[\d,]+ sqm/)[0] : (s.kind === 'block' ? '8 floors' : KIND_LABEL[s.kind] || '')) + '</div><h3>' + s.name + '</h3><p>' + s.detail + '</p>'; };
       b.addEventListener('mouseenter', show);
       b.addEventListener('focus', show);
-      b.addEventListener('click', () => { $$('.hs.sel', mapb).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); show(); });
+      b.addEventListener('click', show);
       mapb.appendChild(b);
     });
-    mapb.addEventListener('mouseleave', () => { const sel = $('.hs.sel', mapb); hl(sel ? sel.dataset.id : null); if (!sel) mcard.innerHTML = home; });
+    /* nothing stays selected: the card and the footprint follow the pointer, and a tap elsewhere clears them */
+    const rest = () => { hl(null); mcard.innerHTML = home; $$('.hs.open', mapb).forEach(x => x.classList.remove('open')); };
+    mapb.addEventListener('mouseleave', rest);
+    document.addEventListener('click', e => { if (!mapb.contains(e.target)) rest(); });
     $$('#mfilters .tab').forEach(t => t.addEventListener('click', () => {
       const kind = t.dataset.kind;
       $$('#mfilters .tab').forEach(x => x.classList.toggle('on', x === t));
