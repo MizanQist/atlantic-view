@@ -575,9 +575,9 @@
   const svgs = [buildStack($('#stack-compact'), 0), buildStack($('#stack'), 4.2)].filter(Boolean);
   const axon = $('#axon');
   if (axon) axon.closest('.ax-wrap').addEventListener('click', () => openLightbox([{ src: A('assets/iso/section.png'), cap: CAPTIONS['assets/iso/section.png'] }], 0, false));
-  $$('#legend li').forEach(li => {
+  $$('#axlegend li[data-type]').forEach(li => {
     const on = () => {
-      $$('#legend li').forEach(x => x.classList.toggle('on', x === li));
+      $$('#axlegend li').forEach(x => x.classList.toggle('on', x === li));
       svgs.forEach(sv => { sv.classList.add('hl'); $$('.zone', sv).forEach(g => g.classList.toggle('on', g.dataset.t === li.dataset.type)); });
       if (axon) { axon.classList.add('hl'); $$('[data-type]', axon).forEach(e => e.classList.toggle('on', e.dataset.type === li.dataset.type)); }
     };

@@ -490,7 +490,7 @@ section.band{background:var(--bg2)}
 svg.hl .zone{opacity:.14}
 svg.hl .zone.on{opacity:1}
 .zone path{stroke:rgba(31,34,39,.4);stroke-width:.35;stroke-linejoin:round;vector-effect:non-scaling-stroke}
-.prog-iso{margin:clamp(28px,4vw,56px) auto 0;grid-column:1/-1;width:100%;max-width:1040px;display:grid;gap:16px;justify-items:center;text-align:center}
+.prog-iso{margin:0 auto;grid-column:1/-1;width:100%;max-width:1040px;display:grid;gap:16px;justify-items:center;text-align:center}
 .ax-wrap{width:100%;cursor:zoom-in}
 .axon{display:block;width:100%;height:auto;font-family:Caveat,cursive}
 .ax-label{font-family:Caveat,cursive;font-weight:600;font-size:21px;fill:var(--ink)}
@@ -501,6 +501,9 @@ svg.hl .zone.on{opacity:1}
 .prog-iso figcaption b{font:500 .74rem/1 var(--fb);letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
 .iso-legend{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;font-size:.78rem;color:var(--ink2)}
 .iso-legend li{display:inline-flex;align-items:center;gap:8px}
+.iso-legend li[data-type]{padding:5px 10px;border-radius:999px;cursor:default;transition:background .3s}
+.iso-legend li[data-type]:hover,.iso-legend li.on{background:var(--bg3)}
+.iso-legend li small{font-size:.7rem;color:var(--ink3);margin-left:2px}
 .iso-legend i{display:block;width:18px;height:18px;border-radius:4px;background:var(--c);border:1px solid rgba(31,34,39,.25);flex:none}
 .prog-iso small{font-size:.72rem;color:var(--ink3);max-width:52ch}
 .lineart-fig{margin:clamp(28px,4vw,56px) auto 0;grid-column:1/-1;width:100%;max-width:1100px;display:grid;gap:14px;justify-items:center;text-align:center}
