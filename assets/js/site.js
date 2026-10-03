@@ -33,7 +33,8 @@
     'o2-clubhouse-pool': 'Option 2: the clubhouse and pool', 'o2-pool-pavilion': 'Option 2: the pool pavilion', 'o2-beach-blocks': 'Option 2: the blocks from the water',
     'lobby-1': 'The entrance lobby', 'lobby-2': 'The lobby lounge', 'lobby-3': 'The lobby reception', 'o2-pools': 'Option 2: infinity pools on the balconies',
     'iso-ground': 'The ground floor in three dimensions', 'iso-typical': 'A typical floor, Levels 2 to 8, in three dimensions', 'iso-pent': 'Level 9 in three dimensions',
-    'assets/iso/block.png': 'One block, from the water: wings coloured by home type'
+    'assets/iso/block.png': 'One block, from the water: wings coloured by home type',
+    'assets/iso/section.png': 'One block cut open: the homes as colour bands around the lift core, the pools on the balconies'
   };
   // resolve an asset path; the single-file preview build defines window.__AV with inlined data URIs
   const A = p => {
@@ -572,9 +573,19 @@
     return svg;
   };
   const svgs = [buildStack($('#stack-compact'), 0), buildStack($('#stack'), 4.2)].filter(Boolean);
+  const axon = $('#axon');
+  if (axon) axon.closest('.ax-wrap').addEventListener('click', () => openLightbox([{ src: A('assets/iso/section.png'), cap: CAPTIONS['assets/iso/section.png'] }], 0, false));
   $$('#legend li').forEach(li => {
-    const on = () => { $$('#legend li').forEach(x => x.classList.toggle('on', x === li)); svgs.forEach(sv => { sv.classList.add('hl'); $$('.zone', sv).forEach(g => g.classList.toggle('on', g.dataset.t === li.dataset.type)); }); };
-    const off = () => { li.classList.remove('on'); svgs.forEach(sv => { sv.classList.remove('hl'); $$('.zone.on', sv).forEach(g => g.classList.remove('on')); }); };
+    const on = () => {
+      $$('#legend li').forEach(x => x.classList.toggle('on', x === li));
+      svgs.forEach(sv => { sv.classList.add('hl'); $$('.zone', sv).forEach(g => g.classList.toggle('on', g.dataset.t === li.dataset.type)); });
+      if (axon) { axon.classList.add('hl'); $$('[data-type]', axon).forEach(e => e.classList.toggle('on', e.dataset.type === li.dataset.type)); }
+    };
+    const off = () => {
+      li.classList.remove('on');
+      svgs.forEach(sv => { sv.classList.remove('hl'); $$('.zone.on', sv).forEach(g => g.classList.remove('on')); });
+      if (axon) { axon.classList.remove('hl'); $$('[data-type].on', axon).forEach(e => e.classList.remove('on')); }
+    };
     li.addEventListener('mouseenter', on); li.addEventListener('focus', on);
     li.addEventListener('mouseleave', off); li.addEventListener('blur', off);
     li.addEventListener('click', () => { if (li.classList.contains('on')) off(); else on(); });
