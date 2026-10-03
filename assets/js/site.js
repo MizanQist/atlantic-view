@@ -668,6 +668,97 @@
     }));
   }
 
+  /* ---------- solar study: the blocks' shadows on the plan for a time and season ---------- */
+  (() => {
+    const SO = window.SP_SOLAR, fig = $('#sofig'), hour = $('#sohour'), lab = $('#sohourlab');
+    if (!SO || !fig || !hour) return;
+    const shadow = $('#soshadow'), arc = $('#soarc'), ray = $('#soray'), mark = $('#sosunmark');
+    const rAlt = $('#so-alt'), rAz = $('#so-az'), rLen = $('#so-len'), rCnt = $('#so-cnt');
+    const D2R = Math.PI / 180, LAT = SO.lat * D2R;
+    let doy = 355;
+    const area = r => { let a = 0; for (let i = 0; i < r.length; i++) { const p = r[i], q = r[(i + 1) % r.length]; a += p[0] * q[1] - q[0] * p[1]; } return a / 2; };
+    const rings = Object.entries(SO.foot).map(([id, f]) => ({ id, h: f.h, pts: area(f.pts) < 0 ? f.pts.slice().reverse() : f.pts.slice() }));
+    const blocks = rings.filter(r => /^b\d/.test(r.id));
+    /* NOAA sun position for local clock time (hours) on a day of the year */
+    const sun = h => {
+      const g = 2 * Math.PI / 365 * (doy - 1 + (h - 12) / 24);
+      const eot = 229.18 * (0.000075 + 0.001868 * Math.cos(g) - 0.032077 * Math.sin(g) - 0.014615 * Math.cos(2 * g) - 0.040849 * Math.sin(2 * g));
+      const dec = 0.006918 - 0.399912 * Math.cos(g) + 0.070257 * Math.sin(g) - 0.006758 * Math.cos(2 * g) + 0.000907 * Math.sin(2 * g) - 0.002697 * Math.cos(3 * g) + 0.00148 * Math.sin(3 * g);
+      const tst = h * 60 + eot + 4 * SO.lon - 60 * SO.tz;
+      const ha = (tst / 4 - 180) * D2R;
+      const sinAlt = Math.sin(LAT) * Math.sin(dec) + Math.cos(LAT) * Math.cos(dec) * Math.cos(ha);
+      const alt = Math.asin(Math.max(-1, Math.min(1, sinAlt)));
+      const cosAz = (Math.sin(dec) - Math.sin(LAT) * sinAlt) / (Math.cos(LAT) * Math.cos(alt) || 1e-9);
+      let az = Math.acos(Math.max(-1, Math.min(1, cosAz)));
+      if (ha > 0) az = 2 * Math.PI - az;
+      return { alt, az };
+    };
+    const sub = r => 'M' + r.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('L') + 'Z';
+    const shift = (r, dx, dy) => r.map(p => [p[0] + dx, p[1] + dy]);
+    const shadowOf = (r, dx, dy) => {           /* footprint, its copy at the shadow tip and a quad per edge: one path, nonzero fill = the union */
+      let d = sub(r.pts) + sub(shift(r.pts, dx, dy));
+      for (let i = 0; i < r.pts.length; i++) {
+        const a = r.pts[i], b = r.pts[(i + 1) % r.pts.length];
+        const q = [a, b, [b[0] + dx, b[1] + dy], [a[0] + dx, a[1] + dy]];
+        d += sub(area(q) < 0 ? q.reverse() : q);
+      }
+      return d;
+    };
+    const inside = (p, r) => { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const a = r[i], b = r[j]; if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+    const shaded = (blk, other, dx, dy) => {    /* does any corner of blk fall in the shadow of other? */
+      const tip = shift(other.pts, dx, dy);
+      return blk.pts.some((p, k) => k % 2 === 0 && (inside(p, tip) || other.pts.some((a, i) => { const b = other.pts[(i + 1) % other.pts.length]; return inside(p, [a, b, [b[0] + dx, b[1] + dy], [a[0] + dx, a[1] + dy]]); })));
+    };
+    const COMPASS = ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'];
+    const pos = (az, k) => [SO.cx + SO.r * k * Math.sin(az), SO.cy - SO.r * k * Math.cos(az)];
+    const dayArc = () => {                      /* the sun's path for the day on the compass ring, sunrise to sunset */
+      const pts = [];
+      for (let h = 4; h <= 21; h += 0.1) { const s = sun(h); if (s.alt > 0) pts.push(pos(s.az, 1)); }
+      arc.setAttribute('d', pts.length ? 'M' + pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('L') : '');
+    };
+    const update = () => {
+      const h = parseFloat(hour.value), s = sun(h), deg = s.alt / D2R;
+      const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+      lab.textContent = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+      if (deg <= 0.5) {
+        fig.classList.add('night'); shadow.setAttribute('d', '');
+        rAlt.textContent = '0'; rAz.textContent = h < 12 ? 'before sunrise' : 'after sunset'; rLen.textContent = '—'; rCnt.textContent = '—';
+        return;
+      }
+      fig.classList.remove('night');
+      const lenM = Math.min(600, 40.5 / Math.tan(s.alt));
+      const ux = -Math.sin(s.az), uy = Math.cos(s.az);
+      let d = '', count = 0;
+      rings.forEach(r => { const L = Math.min(900, r.h / Math.tan(s.alt)) / SO.mpp; d += shadowOf(r, ux * L, uy * L); });
+      shadow.setAttribute('d', d);
+      blocks.forEach(b => { if (rings.some(o => o !== b && shaded(b, o, ux * Math.min(900, o.h / Math.tan(s.alt)) / SO.mpp, uy * Math.min(900, o.h / Math.tan(s.alt)) / SO.mpp))) count++; });
+      const [sx, sy] = pos(s.az, 1), [ex, ey] = pos(s.az, .18);
+      mark.setAttribute('transform', 'translate(' + sx.toFixed(1) + ' ' + sy.toFixed(1) + ')');
+      ray.setAttribute('x1', sx.toFixed(1)); ray.setAttribute('y1', sy.toFixed(1)); ray.setAttribute('x2', ex.toFixed(1)); ray.setAttribute('y2', ey.toFixed(1));
+      rAlt.textContent = Math.round(deg);
+      rAz.textContent = COMPASS[Math.round(s.az / D2R / 45) % 8];
+      rLen.textContent = lenM >= 100 ? Math.round(lenM) : lenM.toFixed(1);
+      rCnt.textContent = count;
+    };
+    hour.addEventListener('input', update);
+    $$('#soseason .tab').forEach(b => b.addEventListener('click', () => {
+      $$('#soseason .tab').forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      doy = parseInt(b.dataset.doy, 10); dayArc(); update();
+    }));
+    dayArc(); update();
+    /* first sight of the study: the morning sweeps through to the afternoon, as in the lodge brochure */
+    if (!reduce && 'IntersectionObserver' in window) {
+      const swio = new IntersectionObserver(es => {
+        if (!es.some(e => e.isIntersecting)) return;
+        swio.disconnect();
+        const from = 7.5, to = 15, dur = 3600; let t0 = null;
+        const step = ts => { if (t0 === null) t0 = ts; const p = Math.min(1, (ts - t0) / dur), e = 1 - Math.pow(1 - p, 3); hour.value = (from + (to - from) * e).toFixed(2); update(); if (p < 1) requestAnimationFrame(step); };
+        hour.value = from; requestAnimationFrame(step);
+      }, { threshold: .4 });
+      swio.observe(fig);
+    }
+  })();
+
   /* ---------- experience index ---------- */
   const prev = $('#prev'), prev2 = $('#prev2');
   const xl = $$('#xl li');
