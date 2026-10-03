@@ -651,6 +651,11 @@
     const rp = $('#spreplay');
     if (rp) rp.addEventListener('click', play);
   }
+  /* every place on the plan opens its pictures: by id, else by kind (the blocks share a set) */
+  const PIC = { block: ['o2-block', 'o2-blocks-palms', 'facade-pools', 'balcony-pool'], club: ['o2-clubhouse-pool', 'o2-pool-pavilion', 'gym'], boatclub: ['o2-marina-dock', 'marina-dusk', 'marina-aerial'], mainmarina: ['marina-dock', 'o2-marina-dock', 'marina-day'], creek: ['o2-beach-marina', 'marina-day'], accessA: ['promenade', 'marina-day'], accessB: ['promenade', 'marina-day'], accessC: ['promenade', 'marina-day'], accessD: ['promenade', 'marina-day'], sports: ['court', 'o2-court'], leisure: ['lawn', 'block-garden'], garden: ['block-garden', 'lawn'], park: ['park-aerial', 'playground', 'o2-playground', 'park-dusk'], plaza: ['arrival-day', 'o2-gateway', 'porte-cochere', 'drop-off', 'arrival-night'] };
+  const spotById = {};
+  const picsFor = s => (PIC[s.id] || PIC[s.kind] || []).map(sl => ({ src: full(sl), cap: s.name + (CAPTIONS[sl] ? ' \u00b7 ' + CAPTIONS[sl] : '') }));
+  const openSpot = s => { const arr = picsFor(s); if (arr.length) openLightbox(arr, 0, false); };
   if (mapb && PD.master) {
     PD.master.spots.forEach(s => {
       if (s.kind === 'label') {
@@ -664,9 +669,15 @@
       const show = () => { hl(s.id); mcard.innerHTML = '<div class="cnt">' + (s.detail.match(/^[\d,]+ sqm/) ? s.detail.match(/^[\d,]+ sqm/)[0] : (s.kind === 'block' ? '8 floors' : KIND_LABEL[s.kind] || '')) + '</div><h3>' + s.name + '</h3><p>' + s.detail + '</p>'; };
       b.addEventListener('mouseenter', show);
       b.addEventListener('focus', show);
-      b.addEventListener('click', show);
+      b.addEventListener('click', () => { show(); openSpot(s); });
+      spotById[s.id] = { spot: s, show };
       mapb.appendChild(b);
     });
+    /* the drawn footprints work like the markers: hover reads the plan, click opens the pictures */
+    if (sp) {
+      sp.addEventListener('mouseover', e => { const t = e.target.closest('[data-id]'); const r = t && spotById[t.dataset.id]; if (r) r.show(); });
+      sp.addEventListener('click', e => { const t = e.target.closest('[data-id]'); const r = t && spotById[t.dataset.id]; if (r) { e.stopPropagation(); openSpot(r.spot); } });
+    }
     /* nothing stays selected: the card and the footprint follow the pointer, and a tap elsewhere clears them */
     const rest = () => { hl(null); mcard.innerHTML = home; $$('.hs.open', mapb).forEach(x => x.classList.remove('open')); };
     mapb.addEventListener('mouseleave', rest);
