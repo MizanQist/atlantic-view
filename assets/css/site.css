@@ -493,7 +493,7 @@ svg.hl .zone.on{opacity:1}
 .prog-iso{margin:0 auto;grid-column:1/-1;width:100%;max-width:1040px;display:grid;gap:16px;justify-items:center;text-align:center}
 .ax-wrap{width:100%;cursor:zoom-in}
 .axon{display:block;width:100%;height:auto;font-family:Caveat,cursive}
-.ax-label{font-family:Caveat,cursive;font-weight:600;font-size:21px;fill:var(--ink)}
+.ax-label{font-family:Caveat,cursive;font-weight:600;font-size:30px;fill:var(--ink)}
 .axon [data-type]{transition:opacity .35s}
 .axon.hl [data-type]{opacity:.16}
 .axon.hl [data-type].on{opacity:1}
@@ -512,7 +512,7 @@ svg.hl .zone.on{opacity:1}
 .lineart{display:block;width:100%;height:auto}
 .lineart-fig figcaption b{display:block;font:500 .74rem/1 var(--fb);letter-spacing:.2em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
 .lineart-fig figcaption span{font-size:.84rem;color:var(--ink2);max-width:60ch;display:block}
-@media(max-width:700px){.ax-label{font-size:30px}}
+@media(max-width:700px){.ax-label{font-size:34px}}
 @media(max-width:1000px){.program{grid-template-columns:1fr 1fr}.prog-exploded{grid-column:1/-1;order:-1}.prog-exploded svg{max-height:none}.prog-compact{grid-column:1/-1}.prog-iso img{max-height:60vh}}
 @media(max-width:620px){.program{grid-template-columns:1fr}}
 
@@ -824,3 +824,15 @@ html.no-anim .sp-bound-draw,html.no-anim .sp-ripple,html.no-anim .sp-dot{display
 @media(max-width:900px){.so-cols{grid-template-columns:1fr}}
 @media(max-width:560px){.so-seasons .tab small{display:none}}
 html.no-anim .sk-sun,html.no-anim .sk-ray,html.no-anim .sk-behind{transition:none}
+
+/* Inside a block: a white page with the three schematics side by side */
+section.blk{background:#fff}
+#block .program{grid-template-columns:1.25fr 1fr 1fr;gap:clamp(20px,2.6vw,40px);align-items:end}
+#block .prog-iso,#block .lineart-fig{grid-column:auto;width:100%;max-width:none;margin:0;gap:12px}
+#block .la-wrap{border:0;border-radius:0;background:transparent}
+#block .prog-iso figcaption,#block .lineart-fig figcaption{max-width:100%}
+#block .iso-legend{gap:6px 8px;font-size:.74rem}
+#block .iso-legend li[data-type]{padding:4px 8px}
+#block .prog-iso small,#block .lineart-fig figcaption span{font-size:.76rem;max-width:40ch}
+@media(max-width:1100px){#block .program{grid-template-columns:1fr 1fr}#block .prog-iso{grid-column:1/-1;max-width:760px;margin:0 auto}}
+@media(max-width:700px){#block .program{grid-template-columns:1fr}}
