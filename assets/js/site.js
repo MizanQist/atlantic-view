@@ -34,7 +34,8 @@
     'lobby-1': 'The entrance lobby', 'lobby-2': 'The lobby lounge', 'lobby-3': 'The lobby reception', 'o2-pools': 'Option 2: infinity pools on the balconies',
     'iso-ground': 'The ground floor in three dimensions', 'iso-typical': 'A typical floor, Levels 2 to 8, in three dimensions', 'iso-pent': 'Level 9 in three dimensions',
     'assets/iso/block.png': 'One block, from the water: wings coloured by home type',
-    'assets/iso/section.png': 'One block cut open: the homes as colour bands around the lift core, the pools on the balconies'
+    'assets/iso/section.png': 'One block cut open: the homes as colour bands around the lift core, the pools on the balconies',
+    'assets/iso/elevation-revit.png': 'The front elevation of a block, redrawn from the architects\' Revit model'
   };
   // resolve an asset path; the single-file preview build defines window.__AV with inlined data URIs
   const A = p => {
@@ -574,6 +575,8 @@
   };
   const svgs = [buildStack($('#stack-compact'), 0), buildStack($('#stack'), 4.2)].filter(Boolean);
   const axon = $('#axon');
+  const law = $('#lawrap');
+  if (law) law.addEventListener('click', () => openLightbox([{ src: A('assets/iso/elevation-revit.png'), cap: CAPTIONS['assets/iso/elevation-revit.png'] }], 0, false));
   if (axon) axon.closest('.ax-wrap').addEventListener('click', () => openLightbox([{ src: A('assets/iso/section.png'), cap: CAPTIONS['assets/iso/section.png'] }], 0, false));
   $$('#axlegend li[data-type]').forEach(li => {
     const on = () => {

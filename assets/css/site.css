@@ -507,7 +507,8 @@ svg.hl .zone.on{opacity:1}
 .iso-legend i{display:block;width:18px;height:18px;border-radius:4px;background:var(--c);border:1px solid rgba(31,34,39,.25);flex:none}
 .prog-iso small{font-size:.72rem;color:var(--ink3);max-width:52ch}
 .lineart-fig{margin:clamp(28px,4vw,56px) auto 0;grid-column:1/-1;width:100%;max-width:1100px;display:grid;gap:14px;justify-items:center;text-align:center}
-.la-wrap{width:100%;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:#fff}
+.la-wrap{width:100%;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:#fff;cursor:zoom-in}
+@media(max-width:700px){.lineart.revit .rv-ink{stroke-width:3.6}.lineart.revit .rv-tim{stroke-width:3}.lineart.revit .rv-canopy{stroke-width:3.6}}
 .lineart{display:block;width:100%;height:auto}
 .lineart-fig figcaption b{display:block;font:500 .74rem/1 var(--fb);letter-spacing:.2em;text-transform:uppercase;color:var(--ink);margin-bottom:8px}
 .lineart-fig figcaption span{font-size:.84rem;color:var(--ink2);max-width:60ch;display:block}
